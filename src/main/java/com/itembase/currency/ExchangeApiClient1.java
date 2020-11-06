@@ -37,12 +37,6 @@ public class ExchangeApiClient1 {
     public Flux<Map.Entry<String, Double>[]> rates(String base){
         return exchangeData(base)
                 .map(exData -> {
-                    /*List<Rate> rates = new ArrayList<Rate>();
-                    exData.getRates().entrySet().forEach(entry->{
-                        System.out.println(entry.getKey() + " " + entry.getValue());
-                        rates.add(new Rate(entry.getKey(), entry.getValue()));
-                    });
-                    return rates;*/
                     return exData.getRates().entrySet().toArray((Map.Entry<String, Double>[]) new Map.Entry[0]);
                 }).flux();
     }
@@ -50,12 +44,6 @@ public class ExchangeApiClient1 {
     public Flux<Map.Entry<String, Double>> rates2(String base){
         return exchangeData(base)
                 .map(exData -> {
-                    /*List<Rate> rates = new ArrayList<Rate>();
-                    exData.getRates().entrySet().forEach(entry->{
-                        System.out.println(entry.getKey() + " " + entry.getValue());
-                        rates.add(new Rate(entry.getKey(), entry.getValue()));
-                    });
-                    return rates;*/
                     return exData.getRates().entrySet().toArray((Map.Entry<String, Double>[]) new Map.Entry[0]);
                 }).flatMapMany(Flux::fromArray);
     }
