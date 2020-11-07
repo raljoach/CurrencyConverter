@@ -1,5 +1,7 @@
 package com.itembase.currency;
 
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -9,6 +11,15 @@ import java.util.List;
 @RestController
 public class CurrencyController {
 
+    @GetMapping("/hello")
+    public String sayHello(
+            @RequestParam(value = "name", defaultValue = "World") String name,
+            Model model) {
+        model.addAttribute("user", name);
+        return "hello " + name;
+    }
+
+/*
     @GetMapping
     public String convert() throws Exception {
 
@@ -31,6 +42,6 @@ public class CurrencyController {
         html+="</body></html>";
         return html;
     }
-
+*/
 
 }
