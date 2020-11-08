@@ -3,6 +3,12 @@ package com.itembase.currency;
 public class ConversionRequest {
     private ConversionData data = new ConversionData();
 
+    public ConversionRequest(){}
+    public ConversionRequest(String from, String to, double amount){
+        this.setFrom(from);;
+        this.setTo(to);
+        this.setAmount(amount);
+    }
     public String getFrom() {
         return data.getFrom();
     }
