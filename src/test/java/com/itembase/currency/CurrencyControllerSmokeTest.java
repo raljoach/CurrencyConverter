@@ -13,7 +13,7 @@ class CurrencyControllerSmokeTest {
 
 	// Verifies controller is being created by MainApplication
 	@Test
-	public void contextLoads() throws Exception {
+	public void testContextLoads() throws Exception {
 		assertThat(controller).isNotNull();
 	}
 

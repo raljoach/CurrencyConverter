@@ -3,6 +3,7 @@ package com.itembase.currency;
 public class ConversionResponse {
     private ConversionData data = new ConversionData();
 
+    public ConversionResponse(){}
     public ConversionResponse(ConversionData data)
     {
         this.data = data;

@@ -6,6 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import java.util.Objects;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 // Test cases for /currency/convert calls
@@ -19,7 +21,7 @@ public class ConversionRequestTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void convertShouldReturnCorrectValues() throws Exception {
+    public void testConvertShouldReturnCorrectValues() {
         String from="EUR", to="USD";
         double amount = 5;
         ConversionRequest convertRequest = new ConversionRequest(from,to,amount);
@@ -27,11 +29,12 @@ public class ConversionRequestTest {
                 "http://localhost:" + port + "/currency/convert",
                 convertRequest,
                 ConversionResponse.class);
-        assertThat(convertResponse!=null);
-        assertThat(convertResponse.getFrom()==from);
-        assertThat(convertResponse.getTo()==to);
+        assert convertResponse != null;
+        assertThat(Objects.equals(convertResponse.getFrom(), from));
+        assertThat(Objects.equals(convertResponse.getTo(), to));
         assertThat(convertResponse.getAmount()==amount);
         assertThat(convertResponse.getConverted()>0);
+        assertThat(convertResponse.getConverted()!=amount);
     }
 
 }
