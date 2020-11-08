@@ -15,6 +15,11 @@ public class ConversionRequest {
         return data.getAmount();
     }
 
+    public ConversionData getData() {
+        return data;
+    }
+
+
     public void setFrom(String from) {
         data.setFrom(from);
     }
@@ -31,6 +36,7 @@ public class ConversionRequest {
     public String toString() {
         return data.toString();
     }
+
 
     /*private String from;
     private String to;

@@ -11,14 +11,20 @@ public class MainApplication {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(MainApplication.class, args);
+		test();
+	}
+
+	private static void test()
+	{
 		var client = new ExchangeApiClient1();
 		System.out.println("BEFORE");
 		//System.out.print(client.getExchangeData2("EUR"));
-		client.printRates("EUR");
+		//client.printRates("EUR");
+		System.out.print(client.outputRate("EUR", "USD"));
 		System.out.println("\nAFTER");
 	}
 
-	private static void UseGenericApiClient()
+	private static void useGenericApiClient()
 	{
 		String baseUrl = "https://api.exchangeratesapi.io", rateUrl="/latest?base=";
 		String baseUrl2 = "https://v6.exchangerate-api.com/v6/68931214b500a7a0f882192f", rateUrl2="/latest/";

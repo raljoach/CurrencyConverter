@@ -1,16 +1,64 @@
 package com.itembase.currency;
 
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("currency")
 public class CurrencyController {
 
+    @GetMapping(value="/sample", produces = "application/json")
+    public Double sample() {
+        var client = new ExchangeApiClient1();
+        return client.getRate("EUR", "USD");
+    }
+
+    @PostMapping(value="/convert", produces = "application/json")
+    public ConversionResponse convert(
+            // TODO: Would be call to passing in media stream to test asynchronous response in web browser
+            //@RequestHeader(value = "Accept", defaultValue="application/json") String acceptHeader,
+            @RequestBody ConversionRequest convertRequest) {
+        return doConversion(convertRequest);
+    }
+
+    @PostMapping(value="/convert2", produces = "application/json")
+    public ConversionResponse convert2(
+            // TODO: Would be call to passing in media stream to test asynchronous response in web browser
+            //@RequestHeader(value = "Accept", defaultValue="application/json") String acceptHeader,
+            @RequestBody ConversionRequest convertRequest) {
+        return doConversion2(convertRequest);
+    }
+
+    @GetMapping("/convertDebug")
+    public ConversionResponse convertDebug(
+            @RequestParam(value = "from", defaultValue = "EUR") String from,
+            @RequestParam(value = "to", defaultValue = "USD") String to,
+            @RequestParam(value = "amount", defaultValue = "0") double amount) {
+        var convertRequest = new ConversionRequest();
+        convertRequest.setAmount(amount);
+        convertRequest.setTo(to);
+        convertRequest.setFrom(from);
+        return doConversion(convertRequest);
+    }
+
+    private ConversionResponse doConversion(ConversionRequest convertRequest) {
+        var client = new ExchangeApiClient1();
+        var rate = client.getRate(convertRequest.getFrom(), convertRequest.getTo());
+        var converted = convertRequest.getAmount() * rate;
+        var data = convertRequest.getData();
+        data.setConverted(converted);
+        return new ConversionResponse(data);
+    }
+
+    private ConversionResponse doConversion2(ConversionRequest convertRequest) {
+        var client = new ExchangeApiClient2();
+        var rate = client.getRate(convertRequest.getFrom(), convertRequest.getTo());
+        var converted = convertRequest.getAmount() * rate;
+        var data = convertRequest.getData();
+        data.setConverted(converted);
+        return new ConversionResponse(data);
+    }
+
+/*
     @GetMapping("/hello")
     public String sayHello(
             @RequestParam(value = "name", defaultValue = "World") String name,
@@ -19,7 +67,7 @@ public class CurrencyController {
         return "hello " + name;
     }
 
-/*
+
     @GetMapping
     public String convert() throws Exception {
 

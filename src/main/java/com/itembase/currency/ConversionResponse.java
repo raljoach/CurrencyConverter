@@ -3,6 +3,11 @@ package com.itembase.currency;
 public class ConversionResponse {
     private ConversionData data = new ConversionData();
 
+    public ConversionResponse(ConversionData data)
+    {
+        this.data = data;
+    }
+
     public String getFrom() {
         return data.getFrom();
     }
