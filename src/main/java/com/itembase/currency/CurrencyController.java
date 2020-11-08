@@ -40,6 +40,18 @@ public class CurrencyController {
         return doConversion(convertRequest);
     }
 
+    @GetMapping("/convertDebug2")
+    public ConversionResponse convertDebug2(
+            @RequestParam(value = "from", defaultValue = "EUR") String from,
+            @RequestParam(value = "to", defaultValue = "USD") String to,
+            @RequestParam(value = "amount", defaultValue = "0") double amount) {
+        var convertRequest = new ConversionRequest();
+        convertRequest.setAmount(amount);
+        convertRequest.setTo(to);
+        convertRequest.setFrom(from);
+        return doConversion2(convertRequest);
+    }
+
     private ConversionResponse doConversion(ConversionRequest convertRequest) {
         var client = new ExchangeApiClient1();
         var rate = client.getRate(convertRequest.getFrom(), convertRequest.getTo());
