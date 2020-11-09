@@ -1,21 +1,15 @@
 package com.itembase.currency;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.reactive.function.BodyInserters;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
 
 import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,9 +27,8 @@ public class CurrencyControllerUnitTests {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    // REFERENCES:
     @Test
-    void testConvertEurToUsd() throws Exception {
+    public void testConvertEurToUsd() throws Exception {
         var convertRequest = new ConversionRequest();
         String from="EUR", to="USD";
         double amount = 5;
