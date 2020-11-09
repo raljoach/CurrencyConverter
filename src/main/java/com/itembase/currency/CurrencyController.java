@@ -1,10 +1,14 @@
 package com.itembase.currency;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("currency")
 public class CurrencyController {
+
+    @Autowired
+    private ExchangeApiService1 exchangeApiService1;
 
     @GetMapping(value="/sample", produces = "application/json")
     public Double sample() {
@@ -53,8 +57,8 @@ public class CurrencyController {
     }
 
     private ConversionResponse doConversion(ConversionRequest convertRequest) {
-        var client = new ExchangeApiClient1();
-        var rate = client.getRate(convertRequest.getFrom(), convertRequest.getTo());
+        //var client = new ExchangeApiClient1();
+        var rate = exchangeApiService1.getRate(convertRequest.getFrom(), convertRequest.getTo());
         var converted = convertRequest.getAmount() * rate;
         var data = convertRequest.getData();
         data.setConverted(converted);
