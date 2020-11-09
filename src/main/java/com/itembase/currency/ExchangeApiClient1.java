@@ -13,10 +13,15 @@ public class ExchangeApiClient1 {
 
     public ExchangeApiClient1()
     {
-        this.baseUrl = "https://api.exchangeratesapi.io";
-        this.rateUrlFormat="/latest?base=";
+        this("https://api.exchangeratesapi.io", "/latest?base=");
+    }
+
+    public ExchangeApiClient1(String baseUrl, String rateUrl) {
+        this.baseUrl = baseUrl;
+        this.rateUrlFormat = rateUrl;
         this.webClient = WebClient.create(baseUrl);
     }
+
 
     public Double getRate(String base, String to){
         return getRateResponse(base, to).block();
