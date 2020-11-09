@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 // Test cases for /currency/convert calls
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ConversionRequestTest {
+public class ConversionIntegrationTests {
 
     @LocalServerPort
     private int port;
@@ -20,6 +20,8 @@ public class ConversionRequestTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    // Tests conversion response has to, from, amount set correctly
+    // and converted is not zero or the same value as amount (assumption rate is not 1)
     @Test
     public void testConvertShouldReturnCorrectValues() {
         String from="EUR", to="USD";
