@@ -45,6 +45,10 @@ public class CurrencyController {
         {
             errorCode="BadInput";
         }
+        else if(ex instanceof CurrencyException)
+        {
+            errorCode = ((CurrencyException) ex).getErrorCode();
+        }
         ErrorResponse error = new ErrorResponse(errorCode, ex.getMessage());
         return Mono.just(
                 ResponseEntity.badRequest()

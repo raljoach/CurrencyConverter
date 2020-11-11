@@ -21,6 +21,16 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+
+/* MISSING CURRENCY SERVICE TEST CASES
+   Test 1: ZWL exists exchange api 1, but not exchange api 2
+   Test 2: ZWL exists exchange api 2, but not exchange api 1
+   Test 3: ZWL not in exchange api 1, not in exchange api 2
+   Test 4: exchange api 1 a-z ordered list, exchange api 2 random order list
+   Test 5: exchange api 2 a-z ordered list, exchange api 1 random order list
+ */
+
+
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(controllers = CurrencyController.class)
 public class UnitTestCurrencyController {
@@ -198,6 +208,70 @@ public class UnitTestCurrencyController {
                 .jsonPath("$.errorCode").doesNotExist()
                 .jsonPath("$.message").doesNotExist();
     }
+
+    @Test
+    void testConvertFromNotFound() {
+        // arrange input, output
+        List<String> currencyTypeList = new ArrayList<>();
+        currencyTypeList.add("EUR");
+        currencyTypeList.add("USD");
+
+        List<String> notInList = new ArrayList<>();
+        notInList.add("ZWL");
+        notInList.add("ZMK");
+        notInList.add("YER");
+
+        String from = notInList.get(ThreadLocalRandom.current().nextInt(notInList.size()));
+        String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
+        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 101);
+        double convertedAmount = -1.0;
+        String errorCode = "NotFound";
+
+        if(from == to || originalAmount == 0)
+        {
+            convertedAmount = originalAmount;
+        }
+        else
+        {
+            convertedAmount = ThreadLocalRandom.current().nextDouble(0, 101);
+        }
+
+        ConversionRequest conversionRequest = new ConversionRequest();
+        conversionRequest.setFrom(from);
+        conversionRequest.setTo(to);
+        conversionRequest.setAmount(originalAmount);
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        String message ="'from' value not found";
+        errorResponse.setErrorCode(errorCode);
+        errorResponse.setMessage(message);
+
+        // arrange mock
+        when(mockCurrencyService.convert(from,to,originalAmount))
+                .thenThrow(new CurrencyException(errorCode,message));
+
+        // act, assert
+        var theResponse =
+                webTestClient.post()
+                        .uri("/currency/convert")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(conversionRequest))
+                        .exchange()
+                        .expectStatus().isBadRequest()
+                        .expectHeader().contentType(MediaType.APPLICATION_JSON_VALUE);
+
+        var theBody = theResponse.expectBody();
+
+        theBody.jsonPath("$.from").doesNotExist()
+                .jsonPath("$.to").doesNotExist()
+                .jsonPath("$.amount").doesNotExist()
+                .jsonPath("$.converted").doesNotExist()
+                .jsonPath("$.errorCode").isEqualTo(errorCode)
+                .jsonPath("$.message").isEqualTo(message);
+
+    }
+
     @Test
     void testConvertFromBadInput(){
         // arrange input, output
