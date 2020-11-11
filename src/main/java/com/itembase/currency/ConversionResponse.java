@@ -1,6 +1,6 @@
 package com.itembase.currency;
 
-public class ConversionResponse {
+public class ConversionResponse extends HttpResponse {
     private String from;
     private String to;
     private double amount;

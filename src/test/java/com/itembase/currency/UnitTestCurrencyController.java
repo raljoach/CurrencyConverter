@@ -13,6 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 
+import javax.management.InvalidApplicationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -34,7 +35,7 @@ public class UnitTestCurrencyController {
     private ObjectMapper mapper;
 
     @Test
-    void testConvert() throws JsonProcessingException {
+    void testConvert() {
         // arrange input, output
         List<String> currencyTypeList = new ArrayList<>();
         currencyTypeList.add("EUR");
@@ -89,6 +90,54 @@ public class UnitTestCurrencyController {
                         .jsonPath("$.errorCode").doesNotExist()
                         .jsonPath("$.message").doesNotExist();
     }
+
+    @Test
+    void testConvertReturn400() {
+        // arrange input
+        String from="";
+        String to="";
+        double originalAmount=0;
+        double convertedAmount=0;
+        String errorCode = "UnknownError";
+        String message = "some Random error message";
+
+        ConversionRequest conversionRequest = new ConversionRequest();
+        conversionRequest.setFrom(from);
+        conversionRequest.setTo(to);
+        conversionRequest.setAmount(originalAmount);
+
+        ConversionResponse conversionResponse = new ConversionResponse();
+        conversionResponse.setFrom(from);
+        conversionResponse.setTo(to);
+        conversionResponse.setAmount(originalAmount);
+        conversionResponse.setConverted(convertedAmount);
+
+        // arrange mock
+        when(mockCurrencyService.convert(from,to,originalAmount))
+                .thenThrow(new NoSuchFieldError(message));
+
+        // act, assert
+        var theResponse =
+                webTestClient.post()
+                        .uri("/currency/convert")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(conversionRequest))
+                        .exchange()
+                        .expectStatus().isBadRequest()
+                        .expectHeader().contentType(MediaType.APPLICATION_JSON_VALUE);
+
+        var theBody = theResponse.expectBody();
+
+        theBody.jsonPath("$.from").doesNotExist()
+                .jsonPath("$.to").doesNotExist()
+                .jsonPath("$.amount").doesNotExist()
+                .jsonPath("$.converted").doesNotExist()
+                .jsonPath("$.errorCode").isEqualTo(errorCode)
+                .jsonPath("$.message").isEqualTo(message);
+
+    }
+
     @Test
     void testConvertFromValid(){
         // arrange input, output

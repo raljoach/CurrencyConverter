@@ -19,8 +19,7 @@ public class CurrencyController {
     private CurrencyService currencyService;
 
     @PostMapping("/convert")
-    public Mono<ResponseEntity<?>> convert(@RequestBody ConversionRequest conversionRequest)
-            throws JsonProcessingException {
+    public Mono<ResponseEntity<HttpResponse>> convert(@RequestBody ConversionRequest conversionRequest) {
         try {
             ConversionResponse conversionResponse = new ConversionResponse();
             conversionResponse.setFrom(conversionRequest.getFrom());
@@ -33,13 +32,23 @@ public class CurrencyController {
                     .subscribe(x -> conversionResponse.setConverted(x));
             return Mono.just(ResponseEntity.ok(conversionResponse));
         }
-        catch(IllegalArgumentException ex)
+        catch(Throwable ex)
         {
-            ErrorResponse error = new ErrorResponse("BadInput", ex.getMessage());
-            return Mono.just(
-                    ResponseEntity.badRequest()
-                    .body(error)
-            );
+            return handleError(ex);
         }
+    }
+
+    private Mono<ResponseEntity<HttpResponse>> handleError(Throwable ex)
+    {
+        String errorCode="UnknownError";
+        if(ex instanceof IllegalArgumentException )
+        {
+            errorCode="BadInput";
+        }
+        ErrorResponse error = new ErrorResponse(errorCode, ex.getMessage());
+        return Mono.just(
+                ResponseEntity.badRequest()
+                        .body(error)
+        );
     }
 }
