@@ -1,56 +1,10 @@
 package com.itembase.currency;
 
 public class ConversionResponse {
-    private ConversionData data = new ConversionData();
-
-    public ConversionResponse(){}
-    public ConversionResponse(ConversionData data)
-    {
-        this.data = data;
-    }
-
-    public String getFrom() {
-        return data.getFrom();
-    }
-
-    public String getTo() {
-        return data.getTo();
-    }
-
-    public double getAmount() {
-        return data.getAmount();
-    }
-
-    public double getConverted() {
-        return data.getConverted();
-    }
-
-    public void setFrom(String from) {
-        data.setFrom(from);
-    }
-
-    public void setTo(String to) {
-        data.setTo(to);
-    }
-
-    public void setAmount(double amount) {
-        data.setAmount(amount);
-    }
-
-    public void setConverted(double converted) {
-        data.setConverted(converted);
-    }
-
-    @Override
-    public String toString() {
-        return data.toString();
-    }
-
-    /*
     private String from;
     private String to;
     private double amount;
-    private double converted;
+    private double convertedAmount;
 
     public String getFrom() {
         return from;
@@ -65,7 +19,7 @@ public class ConversionResponse {
     }
 
     public double getConverted() {
-        return converted;
+        return convertedAmount;
     }
 
     public void setFrom(String from) {
@@ -80,17 +34,7 @@ public class ConversionResponse {
         this.amount = amount;
     }
 
-    public void setConverted(double converted) {
-        this.converted = converted;
+    public void setConverted(double convertedAmount) {
+        this.convertedAmount = convertedAmount;
     }
-
-    @Override
-    public String toString() {
-        return "{" + "from='" + from +'\'' +
-                ", to='" + to + '\'' +
-                ", amount='" + amount + '\'' +
-                ", converted='" + converted + '\'' +
-                '}';
-    }
-     */
 }
