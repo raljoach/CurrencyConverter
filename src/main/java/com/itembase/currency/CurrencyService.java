@@ -12,6 +12,6 @@ public class CurrencyService {
         return Mono.just(res);
     }
 
-    public void setApiList(List<ApiConfig> apiList) {
+    private void setApiList(List<ApiConfig> apiList) {
     }
 }

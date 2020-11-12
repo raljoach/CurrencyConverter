@@ -6,27 +6,29 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.mockito.Mockito.when;
+/* Functional Tests of /currency/convert api of CurrencyController
+   using mock Exchange API Web Servers implementation
+ */
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(controllers = CurrencyController.class)
 @Import({CurrencyService.class, ExchangeClient.class})
-public class CurrencyControllerTests {
+public class IntegrationTestCurrencyConversion {
 
     @Autowired
     WebTestClient webTestClient;
@@ -51,6 +53,19 @@ public class CurrencyControllerTests {
         exchangeApiServer2.shutdown();
     }
 
+    // TODO: V1 This requires a application.yml file in src/main/resources with the below values
+    // TODO: V2 I want to use a application-properties.json file instead of application.yml
+    //       which may require me to use @ActiveProfiles
+    // TODO: V3 I may want to use a config.json/app.config file whereby in the application.yml, I have
+    //       app.configuration=config.json/app.config (WON'T WORK because I can't dynamically change exchange api ports)
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry r) throws IOException {
+        // This is the V1 way
+        r.add("currency.baseUrls[0]", () -> String.format("https://localhost:%s",exchangeApiServer1.getPort()));
+        r.add("currency.baseUrls[1]", () -> String.format("https://localhost:%s",exchangeApiServer2.getPort()));
+    }
+
+    /*
     @BeforeEach
     void initialize() {
         // arrange mocks
@@ -58,6 +73,7 @@ public class CurrencyControllerTests {
         String baseUrl2 = String.format("https://localhost:%s",exchangeApiServer2.getPort());
         currencyService.setApiList(createApiList(baseUrl1, baseUrl2));
     }
+*/
 
     private List<ApiConfig> createApiList(String baseUrl1, String baseUrl2) {
         return null;

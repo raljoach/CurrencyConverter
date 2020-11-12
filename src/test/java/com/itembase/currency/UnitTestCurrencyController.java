@@ -1,6 +1,5 @@
 package com.itembase.currency;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,14 +12,15 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 
-import javax.management.InvalidApplicationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+/* Unit Tests /currency/convert api of CurrencyController
+   using mock CurrencyService implementation
+ */
 
 /* MISSING CURRENCY SERVICE TEST CASES
    Test 1: ZWL exists exchange api 1, but not exchange api 2
