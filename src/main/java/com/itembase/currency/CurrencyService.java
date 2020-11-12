@@ -3,15 +3,33 @@ package com.itembase.currency;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class CurrencyService {
-    public Mono<Double> convert(String base, String to, Double originalAmount) {
-        Double res = -1.0;
-        return Mono.just(res);
+    private List<ApiConfig> apiList = new ArrayList<>();
+    public CurrencyService(){
+        initialize();
     }
 
-    private void setApiList(List<ApiConfig> apiList) {
+    public Mono<Double> convert(String base, String to, Double amount) {
+        shuffle();
+        Mono<Double> rateMono = getRate(base, to, amount);
+        return rateMono.map(rate->rate*amount);
     }
+
+    private Mono<Double> getRate(String base, String to, Double amount) {
+        return null;
+    }
+
+
+    private void shuffle() {
+    }
+
+    private void initialize() {
+
+    }
+
+
 }
