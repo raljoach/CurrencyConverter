@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(controllers = CurrencyController.class)
 @Import({CurrencyService.class, ExchangeClient.class})
+@EnableConfigurationProperties(value = ApiConfig.class)
 public class IntegrationTestCurrencyConversion {
 
     @Autowired

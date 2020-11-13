@@ -1,12 +1,14 @@
 package com.itembase.currency;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Configuration
 @ConfigurationProperties("exchange")
 public class ApiConfig {
     private List<String> baseUrls = new ArrayList<String>();
