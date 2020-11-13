@@ -40,7 +40,7 @@ public class CurrencyController {
 
     private Mono<ResponseEntity<HttpResponse>> handleError(Throwable ex)
     {
-        String errorCode="UnknownError";
+        String errorCode="UnhandledException";
         String message = ex.getMessage();
         if(ex instanceof IllegalArgumentException )
         {
@@ -50,10 +50,10 @@ public class CurrencyController {
         {
             errorCode = ((CurrencyException) ex).getErrorCode();
         }
-        else if(ex instanceof NullPointerException)
+
+        if(message == null || message.isBlank() || message.isEmpty())
         {
-            errorCode="InternalError";
-            message = "";
+            message = ex.toString();
         }
         ErrorResponse error = new ErrorResponse(errorCode, message);
         return Mono.just(
