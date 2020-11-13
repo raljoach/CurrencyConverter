@@ -61,8 +61,8 @@ public class IntegrationTestCurrencyConversion {
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry r) throws IOException {
         // This is the V1 way
-        r.add("currency.baseUrls[0]", () -> String.format("https://localhost:%s",exchangeApiServer1.getPort()));
-        r.add("currency.baseUrls[1]", () -> String.format("https://localhost:%s",exchangeApiServer2.getPort()));
+        r.add("exchange.baseUrls[0]", () -> String.format("https://localhost:%s",exchangeApiServer1.getPort()));
+        r.add("exchange.baseUrls[1]", () -> String.format("https://localhost:%s",exchangeApiServer2.getPort()));
     }
 
     /*
