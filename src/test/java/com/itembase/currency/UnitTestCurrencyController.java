@@ -108,7 +108,7 @@ public class UnitTestCurrencyController {
         String to="";
         double originalAmount=0;
         double convertedAmount=0;
-        String errorCode = "UnknownError";
+        String errorCode = "UnhandledException";
         String message = "some Random error message";
 
         ConversionRequest conversionRequest = new ConversionRequest();
