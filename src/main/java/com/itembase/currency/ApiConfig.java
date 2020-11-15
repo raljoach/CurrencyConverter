@@ -11,8 +11,13 @@ import java.util.concurrent.ThreadLocalRandom;
 @Configuration
 @ConfigurationProperties("exchange")
 public class ApiConfig {
+    private boolean useShuffle;
     private List<String> baseUrls = new ArrayList<String>();
     private List<String> rateUrls = new ArrayList<String>();
+
+    public boolean getUseShuffle() {
+        return useShuffle;
+    }
 
     public List<String> getBaseUrls(){
         return baseUrls;
@@ -20,6 +25,10 @@ public class ApiConfig {
 
     public List<String> getRateUrls(){
         return rateUrls;
+    }
+
+    public void setUseShuffle(boolean useShuffle){
+        this.useShuffle = useShuffle;
     }
 
     public void setBaseUrls(List<String> baseUrls){
@@ -31,11 +40,13 @@ public class ApiConfig {
     }
 
     public void shuffle() {
-        int n = baseUrls.size();
-        for (int current = 0; current < (n - 1); current++) {
-            int other = ThreadLocalRandom.current().nextInt(current + 1, n);
-            swap(baseUrls, current, other);
-            swap(rateUrls, current, other);
+        if(this.useShuffle) {
+            int n = baseUrls.size();
+            for (int current = 0; current < (n - 1); current++) {
+                int other = ThreadLocalRandom.current().nextInt(current + 1, n);
+                swap(baseUrls, current, other);
+                swap(rateUrls, current, other);
+            }
         }
     }
 

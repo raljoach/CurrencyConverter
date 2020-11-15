@@ -33,6 +33,7 @@ public class IntegrationTestCurrencyService {
 
     private static MockWebServer exchangeApiServer1;
     private static MockWebServer exchangeApiServer2;
+    private static Boolean useShuffle = false;
 
     @BeforeAll
     static void setup() throws IOException {
@@ -50,7 +51,7 @@ public class IntegrationTestCurrencyService {
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry r) throws IOException {
-        // This is the V1 way
+        r.add("useShuffle", () -> useShuffle.toString());
         r.add("exchange.baseUrls[0]", () -> String.format("http://localhost:%s",exchangeApiServer1.getPort()));
         r.add("exchange.baseUrls[1]", () -> String.format("http://localhost:%s",exchangeApiServer2.getPort()));
     }
@@ -104,24 +105,61 @@ public class IntegrationTestCurrencyService {
         String from = "EUR";
         String to = "USD";
         double amount = 40;
-        Double rate = 1.25;
+        Double rate1 = 1.25;
+        Double rate2 = 2.86;
+        Double rate0 = 1.0;//0.06;
+
+        // TODO: Not sure this is needed/used [VERIFY if this is used]
         when(mockExchangeClient.getRate(any(String.class)))
-                .thenReturn(Mono.just(rate));
-        
+                .thenReturn(Mono.just(rate0));
+
         exchangeApiServer1.enqueue(new MockResponse()
-                .setBody(rate.toString())
+                .setBody(rate1.toString())
                 .addHeader("Content-Type", "application/json"));
 
         exchangeApiServer2.enqueue(new MockResponse()
-                .setBody(rate.toString())
+                .setBody(rate2.toString())
                 .addHeader("Content-Type", "application/json"));
 
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectNext(amount*rate)
+                .expectNext(amount*rate1)
                 .verifyComplete();
     }
+
+    @Test
+    void testConvertFirstApiUnavailable() throws Exception {
+        //doNothing().when(mockApiConfig).shuffle();
+        //when(mockApiConfig.getBaseUrls()).thenThrow(RuntimeException.class);
+        //when(mockApiConfig.getRateUrls()).thenReturn(Arrays.asList("/latest=<FROM>,<TO>", "/<FROM>"));
+
+        String from = "EUR";
+        String to = "USD";
+        double amount = 40;
+        Double rate1 = 1.25;
+        Double rate2 = 2.60;
+        Double rate0 = 0.06;
+
+        // TODO: Not sure this is needed/used [VERIFY if this is used]
+        when(mockExchangeClient.getRate(any(String.class)))
+                .thenReturn(Mono.just(rate0));
+
+        exchangeApiServer1.enqueue(new MockResponse()
+                .setStatus("404")
+                .setBody("NOT FOUND")
+                .addHeader("Content-Type", "application/json"));
+
+        exchangeApiServer2.enqueue(new MockResponse()
+                .setBody(rate2.toString())
+                .addHeader("Content-Type", "application/json"));
+
+        StepVerifier.create(currencyService.convert(from, to, amount))
+                .expectNext(amount*rate2)
+                .verifyComplete();
+    }
+
 /*
-    //@Test
+    // UNIT TEST
+    @Test
     void testConvertBaseUrl1Unavailable() throws Exception {
         doNothing().when(mockApiConfig).shuffle();
         when(mockApiConfig.getBaseUrls()).thenThrow(RuntimeException.class);
@@ -129,7 +167,7 @@ public class IntegrationTestCurrencyService {
         throw new Exception("Not Implemented");
     }
 
-    //@Test
+    @Test
     void testConvertBaseUrl2Unavailable() throws Exception {
         doNothing().when(mockApiConfig).shuffle();
         when(mockApiConfig.getBaseUrls()).thenReturn(Arrays.asList("https://api1", "https://api2"));
@@ -137,7 +175,7 @@ public class IntegrationTestCurrencyService {
         throw new Exception("Not Implemented");
     }
 
-    //@Test
+    @Test
     void testConvertApi1Unavailable() throws Exception {
         doNothing().when(mockApiConfig).shuffle();
         when(mockApiConfig.getBaseUrls()).thenReturn(Arrays.asList("https://api1", "https://api2"));

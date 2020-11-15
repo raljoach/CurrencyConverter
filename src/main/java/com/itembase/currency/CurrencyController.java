@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import static org.springframework.http.ResponseEntity.ok;
+
 @RestController
 @RequestMapping("currency")
 public class CurrencyController {
@@ -37,13 +39,53 @@ public class CurrencyController {
             conversionResponse.setFrom(conversionRequest.getFrom());
             conversionResponse.setTo(conversionRequest.getTo());
             conversionResponse.setAmount(conversionRequest.getAmount());
-            currencyService.convert(
+            HttpResponse httpResponse = conversionResponse;
+
+            //ok().build()
+            var serviceResponse = currencyService.convert(
                     conversionRequest.getFrom(),
                     conversionRequest.getTo(),
-                    conversionRequest.getAmount())
-                    .subscribe(x -> conversionResponse.setConverted(x));
-            return Mono.just(ResponseEntity.ok(conversionResponse));
-        }
+                    conversionRequest.getAmount()).doOnNext(x->x.doubleValue());
+
+            var notFound = new ResponseEntity<ConversionResponse>(HttpStatus.NOT_FOUND);
+            var notFoundMono = Mono.just(notFound);
+            var res = serviceResponse
+                    .map(convertValue -> {
+                        conversionResponse.setConverted(convertValue);
+                        var responseEntity = ok(httpResponse);
+                        return responseEntity;
+                    });//.block());
+                    //.subscribe();
+                    //.defaultIfEmpty(ResponseEntity.notFound().build());
+            return res;
+            //return res;
+                    //.defaultIfEmpty(ResponseEntity.notFound().build());;
+
+            //.subscribe();
+
+
+
+/*            return serviceResponse
+                    .flatMap(i -> Mono.just(i)
+                            .doOnNext(x->conversionResponse.setConverted(x))
+                            .then(Mono.just(ResponseEntity.ok(conversionResponse)))
+                    )
+
+                    .doOnSubscribe(x->Mono.just(ResponseEntity.ok(conversionResponse)));
+
+ */
+/*
+            return serviceResponse
+                    //.log()
+                    //.flatMap(x->  conversionResponse.setConverted(x);  )
+                    .doOnNext(x->conversionResponse.setConverted(x))
+                    //.thenReturn(ResponseEntity.ok(conversionResponse))
+                    .dematerialize();
+                    //.doOnSubscribe(ok(conversionResponse));
+//                    .doOnSubscribe();
+                    //.subscribe(x -> conversionResponse.setConverted(x));
+            //return Mono.just(ResponseEntity.ok(conversionResponse));
+  */      }
         catch(Throwable ex)
         {
             return handleError(ex);
