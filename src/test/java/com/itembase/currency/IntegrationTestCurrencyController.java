@@ -55,30 +55,11 @@ public class IntegrationTestCurrencyController {
         exchangeApiServer2.shutdown();
     }
 
-    // TODO: V1 This requires a application.yml file in src/main/resources with the below values
-    // TODO: V2 I want to use a application-properties.json file instead of application.yml
-    //       which may require me to use @ActiveProfiles
-    // TODO: V3 I may want to use a config.json/app.config file whereby in the application.yml, I have
-    //       app.configuration=config.json/app.config (WON'T WORK because I can't dynamically change exchange api ports)
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry r) throws IOException {
         // This is the V1 way
         r.add("exchange.baseUrls[0]", () -> String.format("https://localhost:%s",exchangeApiServer1.getPort()));
         r.add("exchange.baseUrls[1]", () -> String.format("https://localhost:%s",exchangeApiServer2.getPort()));
-    }
-
-    /*
-    @BeforeEach
-    void initialize() {
-        // arrange mocks
-        String baseUrl1 = String.format("https://localhost:%s",exchangeApiServer1.getPort());
-        String baseUrl2 = String.format("https://localhost:%s",exchangeApiServer2.getPort());
-        currencyService.setApiList(createApiList(baseUrl1, baseUrl2));
-    }
-*/
-
-    private List<ApiConfig> createApiList(String baseUrl1, String baseUrl2) {
-        return null;
     }
 
     @Test

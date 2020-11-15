@@ -11,7 +11,7 @@ public class ExchangeClient {
         this.exchangeUrl = exchangeUrl;
     }
 
-    public Mono<Double> getRate(String rateUrl, String from, String to) {
+    public Mono<Double> getRate(String rateUrl) {
         return WebClient
                 .create(exchangeUrl)
                 .get()

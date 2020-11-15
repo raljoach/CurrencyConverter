@@ -1,30 +1,59 @@
 package com.itembase.currency;
 
-import okhttp3.internal.connection.Exchange;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-public class UnitTestCurrencyService {
+@ExtendWith(SpringExtension.class)
+@WebFluxTest(CurrencyService.class)
+@EnableConfigurationProperties(value = ApiConfig.class)
+public class IntegrationTestCurrencyService {
+    @MockBean
+    ExchangeClient mockExchangeClient;
+
     @Autowired
     CurrencyService currencyService;
 
-    @MockBean
-    ApiConfig mockApiConfig;
+    private static MockWebServer exchangeApiServer1;
+    private static MockWebServer exchangeApiServer2;
 
-    @MockBean
-    ExchangeClient mockExchangeClient;
+    @BeforeAll
+    static void setup() throws IOException {
+        exchangeApiServer1 = new MockWebServer();
+        exchangeApiServer1.start();
+        exchangeApiServer2 = new MockWebServer();
+        exchangeApiServer2.start();
+    }
+
+    @AfterAll
+    static void tearDown() throws IOException {
+        exchangeApiServer1.shutdown();
+        exchangeApiServer2.shutdown();
+    }
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry r) throws IOException {
+        // This is the V1 way
+        r.add("exchange.baseUrls[0]", () -> String.format("http://localhost:%s",exchangeApiServer1.getPort()));
+        r.add("exchange.baseUrls[1]", () -> String.format("http://localhost:%s",exchangeApiServer2.getPort()));
+    }
 
     /* UT: CurrencyService.getRate
      * T1:  both clients available => rate returned
@@ -72,21 +101,26 @@ public class UnitTestCurrencyService {
      */
     @Test
     void testConvert() {
-        String baseUrl1 = "https://api1";
-        String rateUrl1 = "/latest=<FROM>,<TO>";
         String from = "EUR";
         String to = "USD";
-       //String exchangeUrl = baseUrl1.concat(rateUrl1.replaceAll("<FROM>",from).replaceAll("<TO>",to));
-        //Mockito.when(new Exchange(any(String.class).thenReturn(baseUrl1)));
-        when(mockApiConfig.getBaseUrls()).thenReturn(Arrays.asList(baseUrl1, "https://api2"));
-        when(mockApiConfig.getRateUrls()).thenReturn(Arrays.asList(rateUrl1, "/<FROM>"));
-        when(mockExchangeClient.getRate(rateUrl1, from, to)).thenReturn(Mono.just(1.25));
-        StepVerifier.create(currencyService.convert(from, to, 40.0))
-                .expectNext(40*1.25)
-                .expectComplete()
-                .verify();
-    }
+        double amount = 40;
+        Double rate = 1.25;
+        when(mockExchangeClient.getRate(any(String.class)))
+                .thenReturn(Mono.just(rate));
+        
+        exchangeApiServer1.enqueue(new MockResponse()
+                .setBody(rate.toString())
+                .addHeader("Content-Type", "application/json"));
 
+        exchangeApiServer2.enqueue(new MockResponse()
+                .setBody(rate.toString())
+                .addHeader("Content-Type", "application/json"));
+
+        StepVerifier.create(currencyService.convert(from, to, amount))
+                .expectNext(amount*rate)
+                .verifyComplete();
+    }
+/*
     //@Test
     void testConvertBaseUrl1Unavailable() throws Exception {
         doNothing().when(mockApiConfig).shuffle();
@@ -110,4 +144,6 @@ public class UnitTestCurrencyService {
         when(mockApiConfig.getRateUrls()).thenReturn(Arrays.asList("/latest=<FROM>,<TO>", "/<FROM>"));
         throw new Exception("Not Implemented");
     }
+
+ */
 }
