@@ -18,6 +18,18 @@ public class CurrencyController {
     @Autowired
     private CurrencyService currencyService;
 
+    /* IT: CurrencyController.convert
+     * T1: happyPath base=valid, to=valid, rate=X, amount=Y => base=/,to=/,amt=/,converted=X*Y
+     * T2: cached converted value
+     * T3: expired cached converted value
+     */
+    /* UT: CurrencyController.convert
+       T1: from=empty,null,blank,padded spaces,valid,invalid,wrong,doesn't exist
+       T2: from=valid, to=empty,null,blank,padded spaces,valid,invalid,wrong,doesn't exist
+       T3: from=valid, to=valid,
+           amount=empty,blank,null,padded spaces,valid=0,whole(0-INF).decimals(1-5),invalid=negative,
+                  wrong=alpha,equivalence/boundary:negative,positive,-INF,+INF,-INF-1,+INF+1,0,edge cases
+     */
     @PostMapping("/convert")
     public Mono<ResponseEntity<HttpResponse>> convert(@RequestBody ConversionRequest conversionRequest) {
         try {

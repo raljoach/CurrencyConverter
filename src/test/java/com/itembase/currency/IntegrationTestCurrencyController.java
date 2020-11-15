@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @WebFluxTest(controllers = CurrencyController.class)
 @Import({CurrencyService.class, ExchangeClient.class})
 @EnableConfigurationProperties(value = ApiConfig.class)
-public class IntegrationTestCurrencyConversion {
+public class IntegrationTestCurrencyController {
 
     @Autowired
     WebTestClient webTestClient;

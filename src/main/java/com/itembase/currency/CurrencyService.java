@@ -1,12 +1,11 @@
 package com.itembase.currency;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class CurrencyService {
@@ -18,7 +17,8 @@ public class CurrencyService {
         this.apiConfig = apiConfig;
     }
 
-    /* T1: base = null
+    /* UT: CurrencyService.convert
+    * T1: base = null
     *  T2: base = empty
     *  T3: base = blanks
     *  T4: base = valid, " EUR "
@@ -44,22 +44,23 @@ public class CurrencyService {
          getRate()
          return rate * amount
      */
-    public Mono<Double> convert(String base, String to, Double amount) {
+    public Mono<Double> convert(String from, String to, Double amount) {
         apiConfig.shuffle();
-        Mono<Double> rateMono = getRate(base, to, amount);
+        Mono<Double> rateMono = getRate(from, to);
         return rateMono.map(rate -> rate * amount);
     }
 
-    /* T1:  both clients available
+    /* UT: CurrencyService.getRate
+     * T1:  both clients available
      * T2:  client 1 available, client 2 unavailable   => UnavailableApiError
      * T3:  client 1 unavailable, client 2 available   => rate returned
      * T4:  client 1 timeout, client 2 available       => rate returned
      * T5:  client 1 timeout, client 2 unavailable     => UnavailableApiError
      * T6:  client 1 timeout, client 2 timeout         => UnavailableApiError
-     * T7:  client 1 doesn't have base, client 2 has rate => rate returned
-     * T7:  client 1 doesn't have base, client 2 doesn't have base => RateUnavailabeError(Reason: 'B' not found)
-     * T8:  client 1 doesn't have base, client 2 doesn't have to   => RateUnavailabeError(Reason: 'T' not found)
-     * DUPE(T7) client 1 doesn't have to, client 2 doesn't have base => RateUnavailabeError(Reason: 'T' not found)
+     * T7:  client 1 doesn't have from, client 2 has rate => rate returned
+     * T7:  client 1 doesn't have from, client 2 doesn't have from => RateUnavailabeError(Reason: 'B' not found)
+     * T8:  client 1 doesn't have from, client 2 doesn't have to   => RateUnavailabeError(Reason: 'T' not found)
+     * DUPE(T7) client 1 doesn't have to, client 2 doesn't have from => RateUnavailabeError(Reason: 'T' not found)
      * DUPE(T8) client 1 doesn't have to, client 2 doesn't have to
      * T11: client 1 doesn't have to, client 2 has rate => rate returned
      * T12: client 1 has new rate, client 2 has older rate
@@ -94,17 +95,45 @@ public class CurrencyService {
      * T21: client1 return cached value, client1 returns new value after cache expires
      */
     /* Pseudocode:
-          tryFirstClient()
-             .onErrorResume(trySecondClient()
+          tryClient(0)
+             .onErrorResume(tryClient(1)
                             .onError(throw ApiUnavailableException()))
 
      */
-    private Mono<Double> getRate(String base, String to, Double amount) {
-        return null;
+    private Mono<Double> getRate(String from, String to) {
+        return tryClient(0, from, to)
+                .flatMap(s -> Mono.just(s))
+                .onErrorResume(e->
+                        tryClient(1, from, to)
+                        .flatMap(s->Mono.just(s))
+                        .onErrorResume(
+                                e2 -> Mono.error(
+                                        new ApiException(
+                                             "RateError",
+                                              e2))));
+
     }
 
+    /* Pseudocode:
+          apiClientUrl = apiConfig.baseUrls[i];
+          rateUrl = rateUrl(apiConfig.rateUrls[i], from, to);
+          webClient = new WebClient(apiClientUrl);
+          return webClient.get()
+             .uri(rateUrl)
+             .contentType("application/json")
+             .subscribe();
+     */
+    private Mono<Double> tryClient(int i, String from, String to){
+        String apiClientUrl = apiConfig.getBaseUrls().get(i);
+        String rateUrl = rateUrl(apiConfig.getRateUrls().get(i), from, to);
+        return new ExchangeClient(apiClientUrl).getRate(rateUrl, from, to);
+    }
 
-
-
+    /* Pseudocode:
+          return format.replaceAll("<FROM>", base).replaceAll("<TO>",to)
+     */
+    private String rateUrl(String format, String from, String to) {
+        return format.replaceAll("<FROM>", from).replaceAll("<TO>",to);
+    }
 
 }
