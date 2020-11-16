@@ -79,12 +79,12 @@ public class CurrencyService {
     // TODO: https://stackoverflow.com/questions/56467836/how-to-make-multiple-spring-webclient-calls-in-parallel-and-wait-for-the-result
     // TODO:
     /* UT: CurrencyService.getRate
-     * T1:  both clients available
+     * [X] T1:  both clients available
      * T2:  client 1 available, client 2 unavailable   => UnavailableApiError
-     * T3:  client 1 unavailable, client 2 available   => rate returned
-     * T4:  client 1 timeout, client 2 available       => rate returned
-     * T5:  client 1 timeout, client 2 unavailable     => UnavailableApiError
-     * T6:  client 1 timeout, client 2 timeout         => UnavailableApiError
+     * [X] T3:  client 1 unavailable, client 2 available   => rate returned
+     * [X] T4:  client 1 timeout, client 2 available       => rate returned
+     * [X] T5:  client 1 timeout, client 2 unavailable     => UnavailableApiError
+     * [X] T6:  client 1 timeout, client 2 timeout         => UnavailableApiError
      * T7:  client 1 doesn't have from, client 2 has rate => rate returned
      * T7:  client 1 doesn't have from, client 2 doesn't have from => RateUnavailabeError(Reason: 'B' not found)
      * T8:  client 1 doesn't have from, client 2 doesn't have to   => RateUnavailabeError(Reason: 'T' not found)

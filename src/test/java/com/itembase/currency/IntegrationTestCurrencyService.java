@@ -232,7 +232,8 @@ public class IntegrationTestCurrencyService {
         //        .thenReturn(Mono.just(rate0));
 
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectError();
+                .expectError()
+                .verify();
     }
 
     @Test
@@ -257,7 +258,8 @@ public class IntegrationTestCurrencyService {
                 .addHeader("Content-Type", "application/json"));
 
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectError();
+                .expectError()
+                .verify();
     }
 
     @Test
@@ -283,7 +285,8 @@ public class IntegrationTestCurrencyService {
                 .addHeader("Content-Type", "application/json"));
 
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectError();
+                .expectError()
+                .verify();
     }
 
     @Test
@@ -309,7 +312,8 @@ public class IntegrationTestCurrencyService {
                 .addHeader("Content-Type", "application/json"));
 
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectError();
+                .expectError()
+                .verify();
     }
 
     @Test
@@ -318,9 +322,9 @@ public class IntegrationTestCurrencyService {
         String from = "EUR";
         String to = "USD";
         double amount = 40;
-        Double rate1 = 1000.25;
-        Double rate2 = 2000.60;
-        Double rate0 = 896.06;
+        Double rate1 = -1000.25;
+        Double rate2 = -2000.60;
+        Double rate0 = -896.06;
 
         // TODO: Not sure this is needed/used [VERIFY if this is used]
         //when(mockExchangeClient.getRate(any(String.class)))
@@ -334,23 +338,11 @@ public class IntegrationTestCurrencyService {
                 .setBody(rate2.toString())
                 .addHeader("Content-Type", "application/json"));
 
-        //try {
-            StepVerifier.create(currencyService.convert(from, to, amount))
-                    .expectError();
-        /*}
-        finally {
-            try {
-                exchangeApiServer1.takeRequest(1, TimeUnit.MILLISECONDS);
-            } catch (Exception ex) {
 
-            }
+        StepVerifier.create(currencyService.convert(from, to, amount))
+                .expectError()
+                .verify();
 
-            try {
-                exchangeApiServer2.takeRequest(1, TimeUnit.MILLISECONDS);
-            } catch (Exception ex) {
-
-            }
-        }*/
     }
 
     // TODO: CurrencyService integration test cases
