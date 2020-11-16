@@ -219,7 +219,7 @@ public class IntegrationTestCurrencyService {
     }
 
     @Test
-    void testConvert_FromBadInput() {
+    void testConvert_From_BadInput() {
         // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EURX";
         String to = "USD";
@@ -237,7 +237,7 @@ public class IntegrationTestCurrencyService {
     }
 
     @Test
-    void testConvert_ToBadInput() {
+    void testConvert_To_BadInput() {
         // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EUR";
         String to = "USDX";
@@ -255,7 +255,7 @@ public class IntegrationTestCurrencyService {
     }
 
     @Test
-    void testConvert_AmountBadInput() {
+    void testConvert_Amount_BadInput() {
         // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EUR";
         String to = "USD";
