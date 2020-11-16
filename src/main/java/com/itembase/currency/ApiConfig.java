@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+// TODO: Integration test cases for ApiConfig
 @Configuration
 @ConfigurationProperties("exchange")
 public class ApiConfig {

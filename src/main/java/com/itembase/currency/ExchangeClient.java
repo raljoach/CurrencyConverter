@@ -18,13 +18,17 @@ public class ExchangeClient {
         this.timeout = timeout;
     }
 
-    // TODO:
+
+
     /* Pseudocode:
           create(url)
           .requestTime(this.timeout)
-
+          .bodyToMono(ExchangeData)
+          .flatMap( payload->{
+               return findRate(payload, to);
+          })
      */
-    public Mono<Double> getRate(String rateUrl) {
+    public Mono<Double> getRate(String rateUrl, String to) {
         return WebClient
                 .create(exchangeUrl)
                 .get()
@@ -32,7 +36,11 @@ public class ExchangeClient {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(Double.class)
-                .timeout(Duration.ofMillis(timeout));
+                .bodyToMono(ExchangeData.class)
+                .timeout(Duration.ofMillis(timeout))
+                .flatMap(payload->{
+                    return Mono.just(payload.findRate(to));
+                });
     }
+
 }

@@ -107,7 +107,7 @@ public class IntegrationTestCurrencyController {
 
         // arrange mocks
         Double rate0 = convertedAmount/originalAmount; //= 2.22;
-        when(mockExchangeClient.getRate(any(String.class)))
+        when(mockExchangeClient.getRate(any(String.class), any(String.class)))
                 .thenReturn(Mono.just(rate0));
 //webTestClient = webTestClient.mutate().responseTimeout(Duration.ofMillis(36000));
         // act, assert
