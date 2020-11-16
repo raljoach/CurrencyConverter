@@ -154,7 +154,7 @@ public class CurrencyService {
     private Mono<Double> tryClient(int i, String from, String to){
         String apiClientUrl = apiConfig.getBaseUrls().get(i);
         String rateUrl = rateUrl(apiConfig.getRateUrls().get(i), from, to);
-        return new ExchangeClient(apiClientUrl).getRate(rateUrl);
+        return new ExchangeClient(apiClientUrl, apiConfig.getRequestTimeout()).getRate(rateUrl);
     }
 
     /* Pseudocode:

@@ -127,7 +127,7 @@ public class IntegrationTestCurrencyService {
     }
 
     @Test
-    void testConvertFirstApiUnavailable() throws Exception {
+    void testConvert_Api1_Returns_404() {
         //doNothing().when(mockApiConfig).shuffle();
         //when(mockApiConfig.getBaseUrls()).thenThrow(RuntimeException.class);
         //when(mockApiConfig.getRateUrls()).thenReturn(Arrays.asList("/latest=<FROM>,<TO>", "/<FROM>"));
@@ -148,6 +148,7 @@ public class IntegrationTestCurrencyService {
                 .setBody("NOT FOUND")
                 .addHeader("Content-Type", "application/json"));
 
+        // TODO: ExchangeData with all rates should be returned, not single rate
         exchangeApiServer2.enqueue(new MockResponse()
                 .setBody(rate2.toString())
                 .addHeader("Content-Type", "application/json"));
@@ -157,14 +158,145 @@ public class IntegrationTestCurrencyService {
                 .verifyComplete();
     }
 
+    @Test
+    void testConvert_Api1_Request_Timeout() {
+        // TODO: Use Random values for inputs i.e. RandomUtils
+        String from = "EUR";
+        String to = "USD";
+        double amount = 40;
+        Double rate1 = 1.25;
+        Double rate2 = 2.60;
+        Double rate0 = 0.06;
+
+        // TODO: Not sure this is needed/used [VERIFY if this is used]
+        when(mockExchangeClient.getRate(any(String.class)))
+                .thenReturn(Mono.just(rate0));
+
+        // TODO: ExchangeData with all rates should be returned, not single rate
+        exchangeApiServer2.enqueue(new MockResponse()
+                .setBody(rate2.toString())
+                .addHeader("Content-Type", "application/json"));
+
+        StepVerifier.create(currencyService.convert(from, to, amount))
+                .expectNext(amount*rate2)
+                .verifyComplete();
+    }
+
+    @Test
+    void testConvert_Both_Api_Request_Timeout() {
+        // TODO: Use Random values for inputs i.e. RandomUtils
+        String from = "EUR";
+        String to = "USD";
+        double amount = 40;
+        Double rate1 = 1.25;
+        Double rate2 = 2.60;
+        Double rate0 = 0.06;
+
+        // TODO: Not sure this is needed/used [VERIFY if this is used]
+        when(mockExchangeClient.getRate(any(String.class)))
+                .thenReturn(Mono.just(rate0));
+
+        StepVerifier.create(currencyService.convert(from, to, amount))
+                .expectError();
+    }
+
+    @Test
+    void testConvert_Api2_Result_Returned() {
+        // TODO: Use Random values for inputs i.e. RandomUtils
+        String from = "EUR";
+        String to = "USD";
+        double amount = 40;
+        Double rate1 = 1.25;
+        Double rate2 = 2.60;
+        Double rate0 = 0.06;
+
+        // TODO: Not sure this is needed/used [VERIFY if this is used]
+        when(mockExchangeClient.getRate(any(String.class)))
+                .thenReturn(Mono.just(rate0));
+
+        StepVerifier.create(currencyService.convert(from, to, amount))
+                .expectError();
+    }
+
+    @Test
+    void testConvert_FromBadInput() {
+        // TODO: Use Random values for inputs i.e. RandomUtils
+        String from = "EURX";
+        String to = "USD";
+        double amount = 40;
+        Double rate1 = 1.25;
+        Double rate2 = 2.60;
+        Double rate0 = 0.06;
+
+        // TODO: Not sure this is needed/used [VERIFY if this is used]
+        when(mockExchangeClient.getRate(any(String.class)))
+                .thenReturn(Mono.just(rate0));
+
+        StepVerifier.create(currencyService.convert(from, to, amount))
+                .expectError();
+    }
+
+    @Test
+    void testConvert_ToBadInput() {
+        // TODO: Use Random values for inputs i.e. RandomUtils
+        String from = "EUR";
+        String to = "USDX";
+        double amount = 40;
+        Double rate1 = 1.25;
+        Double rate2 = 2.60;
+        Double rate0 = 0.06;
+
+        // TODO: Not sure this is needed/used [VERIFY if this is used]
+        when(mockExchangeClient.getRate(any(String.class)))
+                .thenReturn(Mono.just(rate0));
+
+        StepVerifier.create(currencyService.convert(from, to, amount))
+                .expectError();
+    }
+
+    @Test
+    void testConvert_AmountBadInput() {
+        // TODO: Use Random values for inputs i.e. RandomUtils
+        String from = "EUR";
+        String to = "USD";
+        double amount = -40;
+        Double rate1 = 1.25;
+        Double rate2 = 2.60;
+        Double rate0 = 0.06;
+
+        // TODO: Not sure this is needed/used [VERIFY if this is used]
+        when(mockExchangeClient.getRate(any(String.class)))
+                .thenReturn(Mono.just(rate0));
+
+        StepVerifier.create(currencyService.convert(from, to, amount))
+                .expectError();
+    }
+
+    @Test
+    void testConvert_Rate_BadInput() {
+        // TODO: Use Random values for inputs i.e. RandomUtils
+        String from = "EUR";
+        String to = "USD";
+        double amount = 40;
+        Double rate1 = 1.25;
+        Double rate2 = 2.60;
+        Double rate0 = 0.06;
+
+        // TODO: Not sure this is needed/used [VERIFY if this is used]
+        when(mockExchangeClient.getRate(any(String.class)))
+                .thenReturn(Mono.just(-5.0));
+
+        StepVerifier.create(currencyService.convert(from, to, amount))
+                .expectError();
+    }
+
     // TODO: CurrencyService integration test cases
     /*
-         T3: 404, both err
-         T4: 400, both err
-         T5: request timeout, both err
-         T6: Bad input, API1 err
-         T7: Bad input, API2 err
-         T8: Failover to API2 success
+         [X] T1: 404, good
+         [X] T2: timeout, good
+         [X] T3: timeout, timeout
+         [ ] T4: bad input
+         [ ] T5: valid: camelCase, lower, UPPER, padded with spaces
          T9: Bad API1 key
          T10: Bad API2 key
          ------------------------------------------------
