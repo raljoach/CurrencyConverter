@@ -157,7 +157,23 @@ public class IntegrationTestCurrencyService {
                 .verifyComplete();
     }
 
-/*
+    // TODO: CurrencyService integration test cases
+    /*
+         T3: 404, both err
+         T4: 400, both err
+         T5: request timeout, both err
+         T6: Bad input, API1 err
+         T7: Bad input, API2 err
+         T8: Failover to API2 success
+         T9: Bad API1 key
+         T10: Bad API2 key
+         ------------------------------------------------
+         T9: lastUpdate of API is older than API2 -> return API2 (do we care?)
+         T10: lastUpdate of API2 is older than API1 -> return API1 (do we care?)
+     */
+
+
+/*   // TODO: CurrencyService unit test cases
     // UNIT TEST
     @Test
     void testConvertBaseUrl1Unavailable() throws Exception {

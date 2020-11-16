@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+// TODO: https://developer.okta.com/blog/2018/09/24/reactive-apis-with-spring-webflux
+// @Log4j2
 @Service
 public class CurrencyService {
     private final ApiConfig apiConfig;
@@ -50,6 +52,32 @@ public class CurrencyService {
         return rateMono.map(rate -> rate * amount);
     }
 
+    // TODO: https://stackoverflow.com/questions/62329617/webflux-webclient-re-try-with-different-url
+    // TODO: https://www.baeldung.com/spring-webclient-simultaneous-calls
+    // TODO: https://technology.amis.nl/2019/08/09/apache-camel-and-spring-boot-calling-multiple-services-in-parallel-and-merging-results/
+    // TODO: https://docs.spring.io/spring-integration/docs/4.3.23.BUILD-SNAPSHOT/reference/html/messaging-endpoints-chapter.html
+    // TODO: https://stackoverflow.com/questions/21670451/how-to-send-multiple-asynchronous-requests-to-different-web-services
+    // TODO: https://stackoverflow.com/questions/48762680/how-to-call-two-or-more-web-services-or-rest-in-parallel-with-project-reactor-an
+    // TODO: https://stackoverflow.com/questions/50203875/how-to-use-spring-webclient-to-make-multiple-calls-simultaneously
+    // TODO: https://stackoverflow.com/questions/48762680/how-to-call-two-or-more-web-services-or-rest-in-parallel-with-project-reactor-an
+    // TODO: https://stackoverflow.com/questions/43592072/do-multiple-calls-to-different-methods-in-parallel-in-spring
+    // TODO: https://stackoverflow.com/questions/21670451/how-to-send-multiple-asynchronous-requests-to-different-web-services
+    // TODO: https://www.baeldung.com/spring-security-async-principal-propagation
+    // TODO: https://medium.com/sipios/how-to-make-parallel-calls-in-java-springboot-application-and-how-to-test-them-dcc27318a0cf
+    // TODO: https://stackoverflow.com/questions/38904723/best-way-to-make-multiple-asynchronous-calls-to-same-web-service
+    // TODO: https://stackoverflow.com/questions/43592072/do-multiple-calls-to-different-methods-in-parallel-in-spring
+    // TODO: https://stackoverflow.com/questions/48762680/how-to-call-two-or-more-web-services-or-rest-in-parallel-with-project-reactor-an
+    // TODO: https://stackoverflow.com/questions/17777880/how-to-send-parallel-get-requests-and-wait-for-result-responses
+    // TODO: https://stackoverflow.com/questions/21670451/how-to-send-multiple-asynchronous-requests-to-different-web-services
+    // TODO: https://niels.nu/blog/2016/spring-async-rest.html
+    // TODO: https://theboreddev.com/combining-multiple-api-calls-with-completablefuture/
+    // TODO: https://dzone.com/articles/parallel-and-asynchronous-programming-in-java-8
+    // TODO: https://nickolasfisher.com/blog/How-to-Make-Concurrent-Service-API-Calls-in-Java-Using-Spring-Boot
+    // TODO: https://www.sipios.com/blog-tech/how-to-make-parallel-calls-in-java-springboot-application-and-how-to-test-them
+    // TODO: https://stackoverflow.com/questions/17777880/how-to-send-parallel-get-requests-and-wait-for-result-responses
+    // TODO: https://medium.com/sipios/how-to-make-parallel-calls-in-java-springboot-application-and-how-to-test-them-dcc27318a0cf
+    // TODO: https://stackoverflow.com/questions/56467836/how-to-make-multiple-spring-webclient-calls-in-parallel-and-wait-for-the-result
+    // TODO:
     /* UT: CurrencyService.getRate
      * T1:  both clients available
      * T2:  client 1 available, client 2 unavailable   => UnavailableApiError

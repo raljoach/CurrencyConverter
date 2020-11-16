@@ -5,12 +5,20 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+// TODO:
+//@Cacheable
 public class ExchangeClient {
     private String exchangeUrl;
     public ExchangeClient(String exchangeUrl) {
         this.exchangeUrl = exchangeUrl;
     }
 
+    // TODO:
+    /* Pseudocode:
+          create(url)
+          .requestTime(this.timeout)
+
+     */
     public Mono<Double> getRate(String rateUrl) {
         return WebClient
                 .create(exchangeUrl)

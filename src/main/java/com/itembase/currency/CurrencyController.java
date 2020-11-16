@@ -13,12 +13,38 @@ import reactor.core.publisher.Mono;
 
 import static org.springframework.http.ResponseEntity.ok;
 
+// TODO: https://docs.spring.io/spring-boot/docs/2.1.4.RELEASE/reference/html/boot-features-logging.html
+// TODO: https://www.baeldung.com/spring-bucket4j
+// TODO: https://docs.spring.io/spring-batch/docs/current/reference/html/retry.html
+// TODO: https://www.baeldung.com/spring-retry
+// TODO: https://dzone.com/articles/spring-retry-way-to-handle-failures
+// TODO: https://grokonez.com/reactive-programming/reactor/reactor-handle-error
+// TODO: https://blog.trifork.com/2019/03/13/retry-functionality-in-a-reactive-programming-context/
+// TODO: https://opensource.zalando.com/restful-api-guidelines/
+// TODO: https://howtodoinjava.com/spring-boot2/rest/enableasync-async-controller/
+// TODO: https://stackoverflow.com/questions/55227086/spring-flux-and-the-async-annotation
+// TODO: https://ilyazinkovich.github.io/2018/10/26/demystifying-spring-magic-async.html
+// TODO: https://www.baeldung.com/spring-mvc-async-vs-webflux
+// TODO: https://www.logicbig.com/how-to/code-snippets/jcode-spring-framework-async-and-enableasync.html
+// TODO: https://www.logicbig.com/tutorials/spring-framework/spring-core/async-annotation.html
+// TODO: https://programmer.ink/think/variable-passing-of-reactor-asynchronous-thread.html
+// TODO: https://theboreddev.com/combining-multiple-api-calls-with-completablefuture/
+/* application.properties
+   logging.file=my.log
+   logging.path=/logs
+   requestTimeout=10000
+*/
+
 @RestController
 @RequestMapping("currency")
 public class CurrencyController {
 
     @Autowired
     private CurrencyService currencyService;
+
+    //TODO: https://www.baeldung.com/spring-security-cache-control-headers
+    //TODO: https://www.springboottutorial.com/spring-boot-versioning-for-rest-services
+    //.cacheControl(CacheControl.maxAge(60, TimeUnit.SECONDS))
 
     /* IT: CurrencyController.convert
      * T1: happyPath base=valid, to=valid, rate=X, amount=Y => base=/,to=/,amt=/,converted=X*Y
@@ -91,6 +117,8 @@ public class CurrencyController {
             return handleError(ex);
         }
     }
+
+    //TODO: @GetMapping /status
 
     private Mono<ResponseEntity<HttpResponse>> handleError(Throwable ex)
     {
