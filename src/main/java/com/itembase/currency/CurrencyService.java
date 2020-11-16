@@ -130,10 +130,11 @@ public class CurrencyService {
      */
     private Mono<Double> getRate(String from, String to) {
         return tryClient(0, from, to)
-                .flatMap(s -> Mono.just(s))
+                .log()
+                .flatMap(rate1 -> { System.out.println("Using rate1: " + rate1); return Mono.just(rate1);} )
                 .onErrorResume(e->
                         tryClient(1, from, to)
-                        .flatMap(s->Mono.just(s))
+                        .flatMap(rate2 ->{ System.out.println("Using rate2: " + rate2); return Mono.just(rate2); })
                         .onErrorResume(
                                 e2 -> Mono.error(
                                         new ApiException(
