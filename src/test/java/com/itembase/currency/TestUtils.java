@@ -236,7 +236,7 @@ public class TestUtils {
     }
 
     public static void setConfig(DynamicPropertyRegistry r, Boolean useShuffle) {
-        r.add("requestTimeout", () -> "1000");
+        //r.add("requestTimeout", () -> "1000");
         r.add("useShuffle", () -> useShuffle.toString());
         r.add("exchange.baseUrls[0]", () -> String.format("http://localhost:%s",8181));
         //exchangeApiServer1.getPort()));

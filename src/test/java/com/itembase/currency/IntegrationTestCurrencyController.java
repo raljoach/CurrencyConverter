@@ -13,6 +13,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+import reactor.test.StepVerifier;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -79,12 +80,9 @@ public class IntegrationTestCurrencyController {
         ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
 
         // arrange mocks
-        Double rate0 = convertedAmount/originalAmount;
-        //when(mockExchangeClient.getRate(any(String.class), any(String.class)))
-        //        .thenReturn(Mono.just(rate0));
-
-        TestUtils.addExchangeApiServer1Response(from, to, rate0);
-        TestUtils.addExchangeApiServer2Response(from, to, rate0);
+        Double rate = convertedAmount/originalAmount;
+        TestUtils.addExchangeApiServer1Response(from, to, rate);
+        TestUtils.addExchangeApiServer2Response(from, to, rate);
 
         // act, assert
         var theResponse =
@@ -105,5 +103,79 @@ public class IntegrationTestCurrencyController {
                 .jsonPath("$.converted").isEqualTo(convertedAmount)
                 .jsonPath("$.errorCode").doesNotExist()
                 .jsonPath("$.message").doesNotExist();
+    }
+
+    @Test
+    void testConvert_From_DoesNotExist() {
+        // arrange inputs
+        // TODO: Use Random values for inputs i.e. RandomUtils
+        String from = "EURX";
+        String to = "USD";
+        double amount = 40;
+        var status = "400";
+        var errorMessage ="base does not exist in API";
+
+        ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, amount);
+
+        // arrange mocks
+        TestUtils.addExchangeApiServer1ErrorResponse(status, errorMessage);
+        TestUtils.addExchangeApiServer2ErrorResponse(status, errorMessage);
+
+        // assert
+        var theResponse =
+                webTestClient.post()
+                        .uri("/currency/convert")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(conversionRequest))
+                        .exchange()
+                        .expectStatus().isBadRequest()
+                        .expectHeader().contentType(MediaType.APPLICATION_JSON_VALUE);
+
+        var theBody = theResponse.expectBody();
+
+        theBody.jsonPath("$.from").doesNotExist()
+                .jsonPath("$.to").doesNotExist()
+                .jsonPath("$.amount").doesNotExist()
+                .jsonPath("$.converted").doesNotExist()
+                .jsonPath("$.errorCode").isEqualTo("BadInput")
+                .jsonPath("$.message").isEqualTo(errorMessage);
+    }
+
+    @Test
+    void testConvert_To_DoesNotExist() {
+        // arrange inputs
+        // TODO: Use Random values for inputs i.e. RandomUtils
+        String from = "EUR";
+        String to = "USDX";
+        double amount = 40;
+        var status = "400";
+        var errorMessage ="to does not exist in API";
+
+        ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, amount);
+
+        // arrange mocks
+        TestUtils.addExchangeApiServer1ErrorResponse(status, errorMessage);
+        TestUtils.addExchangeApiServer2ErrorResponse(status, errorMessage);
+
+        /// assert
+        var theResponse =
+                webTestClient.post()
+                        .uri("/currency/convert")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(conversionRequest))
+                        .exchange()
+                        .expectStatus().isBadRequest()
+                        .expectHeader().contentType(MediaType.APPLICATION_JSON_VALUE);
+
+        var theBody = theResponse.expectBody();
+
+        theBody.jsonPath("$.from").doesNotExist()
+                .jsonPath("$.to").doesNotExist()
+                .jsonPath("$.amount").doesNotExist()
+                .jsonPath("$.converted").doesNotExist()
+                .jsonPath("$.errorCode").isEqualTo("BadInput")
+                .jsonPath("$.message").isEqualTo(errorMessage);
     }
 }

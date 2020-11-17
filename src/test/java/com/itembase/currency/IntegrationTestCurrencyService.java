@@ -155,45 +155,45 @@ public class IntegrationTestCurrencyService {
     }
 
     @Test
-    void testConvert_From_BadInput() {
+    void testConvert_From_DoesNotExist() {
         // arrange inputs
         // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EURX";
         String to = "USD";
         double amount = 40;
-        Double rate1 = 13.25;
-        Double rate2 = 22.60;
+        var status = "400";
+        var errorMessage ="base does not exist in API";
 
         // arrange mocks
-        TestUtils.addExchangeApiServer1Response(from, to, rate1);
-        TestUtils.addExchangeApiServer2Response(from, to, rate2);
+        TestUtils.addExchangeApiServer1ErrorResponse(status, errorMessage);
+        TestUtils.addExchangeApiServer1ErrorResponse(status, errorMessage);
 
         // assert
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectErrorMessage("base does not exist in API")
+                .expectErrorMessage(errorMessage)
                 .verify();
     }
 
     @Test
-    void testConvert_To_BadInput() {
+    void testConvert_To_DoesNotExist() {
         // arrange inputs
         // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EUR";
         String to = "USDX";
         double amount = 40;
-        Double rate1 = 44.25;
-        Double rate2 = 56.60;
+        var status = "400";
+        var errorMessage ="to does not exist in API";
 
         // arrange mocks
-        TestUtils.addExchangeApiServer1Response(from, to, rate1);
-        TestUtils.addExchangeApiServer2Response(from, to, rate2);
+        TestUtils.addExchangeApiServer1ErrorResponse(status, errorMessage);
+        TestUtils.addExchangeApiServer1ErrorResponse(status, errorMessage);
 
         // assert
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectErrorMessage("to does not exist in API")
+                .expectErrorMessage(errorMessage)
                 .verify();
     }
-
+/*
     @Test
     void testConvert_Amount_BadInput() {
         // arrange inputs
@@ -207,7 +207,7 @@ public class IntegrationTestCurrencyService {
                 .expectErrorMessage("amount is less than zero")
                 .verify();
     }
-
+*/
     @Test
     void testConvert_Rate_BadInput() {
         // TODO: Use Random values for inputs i.e. RandomUtils

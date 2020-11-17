@@ -129,7 +129,7 @@ public class End2EndTestCurrencyController {
     }
 
     @Test
-    void testConvert_From_BadInput() {
+    void testConvert_From_DoesNotExist() {
         // arrange input
         String from = "EURX";
         String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
@@ -150,7 +150,7 @@ public class End2EndTestCurrencyController {
     }
 
     @Test
-    void testConvert_To_BadInput() {
+    void testConvert_To_DoesNotExist() {
         // arrange input
         String to = "EURX";
         String from = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));

@@ -1,6 +1,7 @@
 package com.itembase.currency;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /* Unit Tests /currency/convert api of CurrencyController
@@ -107,15 +110,15 @@ public class UnitTestCurrencyController {
         String to="";
         double originalAmount=0;
         String errorCode = "UnhandledException";
-        String message = "some Random error message";
+        String errorMessage = "from is empty";
 
         var conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
 
         // arrange mock
-        when(mockCurrencyService.convert(from,to,originalAmount))
-                .thenThrow(new NoSuchFieldError(message));
+        //when(mockCurrencyService.convert(from,to,originalAmount))
+        //        .thenThrow(new NoSuchFieldError(errorMessage));
 
-        // act, assert
+        // assert
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")
@@ -132,8 +135,14 @@ public class UnitTestCurrencyController {
                 .jsonPath("$.to").doesNotExist()
                 .jsonPath("$.amount").doesNotExist()
                 .jsonPath("$.converted").doesNotExist()
-                .jsonPath("$.errorCode").isEqualTo(errorCode)
-                .jsonPath("$.message").isEqualTo(message);
+                .jsonPath("$.errorCode").isEqualTo(errorCode);
+
+        theResponse.expectBody(ErrorResponse.class).consumeWith(
+                response->{
+                    var err = response.getResponseBody();
+                    assertEquals(errorCode, err.getErrorCode());
+                    assertTrue(err.getMessage().contains(errorMessage));
+                });
 
     }
 
@@ -320,6 +329,49 @@ public class UnitTestCurrencyController {
                 .jsonPath("$.converted").doesNotExist()
                 .jsonPath("$.errorCode").isEqualTo(errorCode)
                 .jsonPath("$.message").isEqualTo(errorMessage);
+
+    }
+
+    @Test
+    void testConvert_Amount_BadInput() {
+        // arrange input
+        // arrange input, output
+        List<String> currencyTypeList = new ArrayList<>();
+        currencyTypeList.add("EUR");
+        currencyTypeList.add("USD");
+        String from = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
+        String to = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
+        double originalAmount = -40;
+        var errorCode="UnhandledException";
+        var errorMessage  = "amount is less than zero";
+        ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
+
+        // assert
+        var theResponse =
+                webTestClient.post()
+                        .uri("/currency/convert")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(conversionRequest))
+                        .exchange()
+                        .expectStatus().isBadRequest()
+                        .expectHeader().contentType(MediaType.APPLICATION_JSON_VALUE);
+
+        var theBody = theResponse.expectBody();
+
+        // assert
+        theBody.jsonPath("$.from").doesNotExist()
+                .jsonPath("$.to").doesNotExist()
+                .jsonPath("$.amount").doesNotExist()
+                .jsonPath("$.converted").doesNotExist()
+                .jsonPath("$.errorCode").isEqualTo(errorCode);
+
+        theResponse.expectBody(ErrorResponse.class).consumeWith(
+                response->{
+                    var err = response.getResponseBody();
+                    assertEquals(errorCode, err.getErrorCode());
+                    assertTrue(err.getMessage().contains(errorMessage));
+                });
 
     }
 }

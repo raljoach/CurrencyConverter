@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("currency")
+@Validated
 public class CurrencyController {
 
     @Autowired
@@ -61,6 +63,8 @@ public class CurrencyController {
     @PostMapping("/convert")
     public Mono<ResponseEntity<HttpResponse>> convert(@RequestBody ConversionRequest conversionRequest) {
         try {
+
+            conversionRequest.validate();
             ConversionResponse conversionResponse = new ConversionResponse();
             conversionResponse.setFrom(conversionRequest.getFrom());
             conversionResponse.setTo(conversionRequest.getTo());
@@ -78,6 +82,7 @@ public class CurrencyController {
             var res = serviceResponse
                     .map(convertValue -> {
                         conversionResponse.setConverted(convertValue);
+                        conversionResponse.validate();
                         var responseEntity = ok(httpResponse);
                         return responseEntity;
                     });//.block());

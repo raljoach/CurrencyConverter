@@ -1,40 +1,50 @@
 package com.itembase.currency;
 
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+
 public class ConversionResponse extends HttpResponse {
-    private String from;
-    private String to;
-    private double amount;
-    private double convertedAmount;
+
+    private final ConversionData data = new ConversionData();
 
     public String getFrom() {
-        return from;
+        return data.getFrom();
     }
 
     public String getTo() {
-        return to;
+        return data.getTo();
     }
 
     public double getAmount() {
-        return amount;
-    }
-
-    public double getConverted() {
-        return convertedAmount;
+        return data.getAmount();
     }
 
     public void setFrom(String from) {
-        this.from = from;
+        data.setFrom(from);
     }
 
     public void setTo(String to) {
-        this.to = to;
+        data.setTo(to);
     }
 
     public void setAmount(double amount) {
-        this.amount = amount;
+        data.setAmount(amount);
+    }
+
+    public double getConverted() {
+        return data.getConvertedAmount();
     }
 
     public void setConverted(double convertedAmount) {
-        this.convertedAmount = convertedAmount;
+        data.setConvertedAmount(convertedAmount);
+    }
+
+    public void validate() {
+        var validator = new ConversionDataValidator();
+        Errors errors = new BeanPropertyBindingResult(data, "person");
+        validator.validate(data, errors);
+        if (errors.hasErrors()) {
+            throw new ApiException("BadInput",errors.toString());
+        }
     }
 }
