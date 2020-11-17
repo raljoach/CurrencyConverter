@@ -1,7 +1,10 @@
 package com.itembase.currency;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -11,7 +14,26 @@ import java.util.TreeMap;
 // TODO: https://stackoverflow.com/questions/29746303/how-to-map-json-fields-to-custom-object-properties/29746495
 // TODO: https://stackoverflow.com/questions/29746303/how-to-map-json-fields-to-custom-object-properties
 public class ExchangeData {
+
+    @JsonProperty("base")
+    @JsonAlias("base_code")
+    private String base;
+
+    @JsonProperty("date")
+    @JsonAlias("time_last_update_utc")
+    private LocalDateTime lastUpdate;
+
+    @JsonProperty("rates")
+    @JsonAlias("conversion_rates")
     private Map<String, Double> rates;
+
+    public String getBase() {
+        return this.base;
+    }
+
+    public LocalDateTime getLastUpdate() {
+        return this.lastUpdate;
+    }
 
     public Map<String, Double> getRates() {
         return this.rates;
@@ -28,11 +50,19 @@ public class ExchangeData {
              vs
              O(N) search every key
      */
+
+    public void setBase(String base) {
+        this.base = base;
+    }
+
+    public void setLastUpdate(LocalDateTime dateTime) {
+        this.lastUpdate = dateTime;
+    }
+
     public void setRates(Map<String, Double> rates){
         this.rates = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.rates.putAll(rates);
     }
-
 
     /* Pseudocode
             ExchangeData payload

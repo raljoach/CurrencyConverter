@@ -94,23 +94,12 @@ public class IntegrationTestCurrencyController {
             convertedAmount = ThreadLocalRandom.current().nextDouble(0, 101);
         }
 
-        ConversionRequest conversionRequest = new ConversionRequest();
-        conversionRequest.setFrom(from);
-        conversionRequest.setTo(to);
-        conversionRequest.setAmount(originalAmount);
-
-        ConversionResponse conversionResponse = new ConversionResponse();
-        conversionResponse.setFrom(from);
-        conversionResponse.setTo(to);
-        conversionResponse.setAmount(originalAmount);
-        conversionResponse.setConverted(convertedAmount);
+        ConversionRequest conversionRequest = Utils.createConversionRequest(from, to, originalAmount);
 
         // arrange mocks
         Double rate0 = convertedAmount/originalAmount; //= 2.22;
         when(mockExchangeClient.getRate(any(String.class), any(String.class)))
                 .thenReturn(Mono.just(rate0));
-//webTestClient = webTestClient.mutate().responseTimeout(Duration.ofMillis(36000));
-        // act, assert
 
         exchangeApiServer1.enqueue(new MockResponse()
                 .setBody(rate0.toString())
@@ -120,7 +109,7 @@ public class IntegrationTestCurrencyController {
                 .setBody(rate0.toString())
                 .addHeader("Content-Type", "application/json"));
 
-
+        // act, assert
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")

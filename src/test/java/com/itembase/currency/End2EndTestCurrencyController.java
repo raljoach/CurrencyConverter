@@ -1,6 +1,5 @@
 package com.itembase.currency;
 
-import okhttp3.mockwebserver.MockResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,16 +103,7 @@ public class End2EndTestCurrencyController {
         String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
         double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1000000000);
 
-        ConversionRequest conversionRequest = new ConversionRequest();
-        conversionRequest.setFrom(from);
-        conversionRequest.setTo(to);
-        conversionRequest.setAmount(originalAmount);
-
-        ConversionResponse conversionResponse = new ConversionResponse();
-        conversionResponse.setFrom(from);
-        conversionResponse.setTo(to);
-        conversionResponse.setAmount(originalAmount);
-
+        ConversionRequest conversionRequest = Utils.createConversionRequest(from, to, originalAmount);
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")
@@ -142,16 +131,7 @@ public class End2EndTestCurrencyController {
         String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
         double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1000000000);
 
-        ConversionRequest conversionRequest = new ConversionRequest();
-        conversionRequest.setFrom(from);
-        conversionRequest.setTo(to);
-        conversionRequest.setAmount(originalAmount);
-
-        ConversionResponse conversionResponse = new ConversionResponse();
-        conversionResponse.setFrom(from);
-        conversionResponse.setTo(to);
-        conversionResponse.setAmount(originalAmount);
-
+        ConversionRequest conversionRequest = Utils.createConversionRequest(from, to, originalAmount);
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")
@@ -169,16 +149,7 @@ public class End2EndTestCurrencyController {
         String from = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
         double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1000000000);
 
-        ConversionRequest conversionRequest = new ConversionRequest();
-        conversionRequest.setFrom(from);
-        conversionRequest.setTo(to);
-        conversionRequest.setAmount(originalAmount);
-
-        ConversionResponse conversionResponse = new ConversionResponse();
-        conversionResponse.setFrom(from);
-        conversionResponse.setTo(to);
-        conversionResponse.setAmount(originalAmount);
-
+        ConversionRequest conversionRequest = Utils.createConversionRequest(from, to, originalAmount);
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")
@@ -196,16 +167,7 @@ public class End2EndTestCurrencyController {
         String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
         double originalAmount = -40;
 
-        ConversionRequest conversionRequest = new ConversionRequest();
-        conversionRequest.setFrom(from);
-        conversionRequest.setTo(to);
-        conversionRequest.setAmount(originalAmount);
-
-        ConversionResponse conversionResponse = new ConversionResponse();
-        conversionResponse.setFrom(from);
-        conversionResponse.setTo(to);
-        conversionResponse.setAmount(originalAmount);
-
+        ConversionRequest conversionRequest = Utils.createConversionRequest(from, to, originalAmount);
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")
