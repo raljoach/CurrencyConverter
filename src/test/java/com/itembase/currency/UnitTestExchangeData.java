@@ -129,13 +129,10 @@ public class UnitTestExchangeData {
     {
         // arrange
         var payload = new ExchangeData();
-        payload.setRates(rates);
-        Optional<String> res = Arrays.stream(currencies).findAny();
         String to = "EUR";
         double expectedRate = rates.get(to);
-        double actualRate = payload.findRate(to);
-        assertEquals(expectedRate, actualRate);
         rates.remove(to);
+        payload.setRates(rates);
 
         try {
             // act

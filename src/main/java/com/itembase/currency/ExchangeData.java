@@ -85,9 +85,9 @@ public class ExchangeData {
         if(to==null || to.length()==0) throw new IllegalArgumentException("To cannot be: " + to);
         var tmp = to.replaceAll(" ","");
         var rates = getRates();
-        if(rates!=null && rates.containsKey(to))
+        if(rates!=null && rates.containsKey(tmp))
         {
-            return rates.get(to);
+            return rates.get(tmp);
         }
         throw new ApiException("RateNotFound", "To not found: " + to);
     }

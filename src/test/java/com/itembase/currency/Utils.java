@@ -25,10 +25,42 @@ public class Utils {
         return conversionResponse;
     }
 
-    public static String createApiDataFormat1(String base, String to, Map<String, Double> rates)
-    {
+    public static String createApiData1(String base, String to, Map<String, Double> rates) {
         StringBuilder result = new StringBuilder("{\n");
         result.append("\"rates\": { \n");
+        result.append(createStr(rates));
+        result.append("},\n\"");
+        result.append("\"base\": \""+base+"\", \n");
+        result.append("\"date\": \"2020-11-02\" \n");
+        result.append("}");
+        return result.toString();
+    }
+
+    public static String createApiData2(String base, String to, Map<String, Double> rates) {
+        StringBuilder result = new StringBuilder("{\n");
+        appendKeyValueToStr(result, "result", "\"success\"");
+        appendKeyValueToStr(result, "documentation", "\"success\"");
+        appendKeyValueToStr(result, "terms_of_use", "\"success\"");
+        appendKeyValueToStr(result, "time_last_update_unix", "\"success\"");
+        appendKeyValueToStr(result, "time_last_update_utc", "\"success\"");
+        appendKeyValueToStr(result, "time_next_update_unix", "\"success\"");
+        appendKeyValueToStr(result, "time_next_update_utc", "\"success\"");
+        appendKeyValueToStr(result, "base_code", "\""+base+"\"");
+        appendKeyValueToStr(result, "conversion_rates", "{\n" + createStr(rates) + "\n}");
+        result.append("}\n");
+        return result.toString();
+    }
+
+    /* Pseudocode:
+        result.append(result).append(": ").append(value);
+
+     */
+    private static void appendKeyValueToStr(StringBuilder result, String key, String value) {
+        result.append(result).append(": ").append(value).append("\n");
+    }
+
+    private static String createStr(Map<String, Double> rates) {
+        StringBuilder result = new StringBuilder();
         var itr = rates.entrySet().iterator();
         var count=0;
         while(itr.hasNext())
@@ -42,10 +74,6 @@ public class Utils {
             result.append("\"" +  rate + "\":" + rate);
         }
         result.append("\n\"");
-        result.append("},\n\"");
-        result.append("\"base\": \""+base+"\", \n");
-        result.append("\"date\": \"2020-11-02\" \n");
-        result.append("}");
         return result.toString();
     }
 }
