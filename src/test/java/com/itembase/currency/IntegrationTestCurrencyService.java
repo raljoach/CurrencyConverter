@@ -1,7 +1,5 @@
 package com.itembase.currency;
 
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.test.StepVerifier;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,74 +18,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @WebFluxTest(CurrencyService.class)
 @EnableConfigurationProperties(value = ApiConfig.class)
 public class IntegrationTestCurrencyService {
-    //@MockBean
-    //ExchangeClient mockExchangeClient;
-
     @Autowired
     CurrencyService currencyService;
 
-    private static MockWebServer exchangeApiServer1;
-    private static MockWebServer exchangeApiServer2;
     private static Boolean useShuffle = false;
-
-    @BeforeAll
-    static void setup() throws IOException {
-        //start();
-    }
-
-    static void start() throws IOException {
-        exchangeApiServer1 = new MockWebServer();
-        exchangeApiServer1.start(8181);
-        exchangeApiServer2 = new MockWebServer();
-        exchangeApiServer2.start(7171);
-    }
-
-    @AfterAll
-    static void tearDown() throws IOException {
-        //stop();
-    }
 
     @BeforeEach
     void testStart() throws IOException {
-        start();
+        TestUtils.startExchangeApiServers();
     }
 
     @AfterEach
     void testStop() throws IOException {
-        stop();
+        TestUtils.stopExchangeApiServers();
     }
 
-    static void stop() throws IOException {
-        exchangeApiServer1.shutdown();
-        exchangeApiServer2.shutdown();
-    }
-/*
-    @AfterEach
-    void cleanup() throws InterruptedException {
-        try {
-
-            while (exchangeApiServer1.getRequestCount() > 0) {
-                exchangeApiServer1.takeRequest(0, TimeUnit.MILLISECONDS);
-            }
-        } catch (Exception ex)
-        {}
-
-        try{
-        while(exchangeApiServer2.getRequestCount()>0)
-        {
-            exchangeApiServer2.takeRequest(0, TimeUnit.MILLISECONDS);
-        }
-        } catch (Exception ex)
-        {}
-    }*/
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry r) throws IOException {
-        r.add("useShuffle", () -> useShuffle.toString());
-        r.add("exchange.baseUrls[0]", () -> String.format("http://localhost:%s",8181));
-                //exchangeApiServer1.getPort()));
-        r.add("exchange.baseUrls[1]", () -> String.format("http://localhost:%s",7171));
-                //exchangeApiServer2.getPort()));
+        TestUtils.setConfig(r, useShuffle);
     }
 
     /* UT: CurrencyService.getRate
@@ -137,25 +85,17 @@ public class IntegrationTestCurrencyService {
      */
     @Test
     void testConvert() {
+        // arrange input
+        // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EUR";
         String to = "USD";
         double amount = 40;
         Double rate1 = 1.125;
-        Double rate2 = 2.856;
-        Double rate0 = 1.05;//0.06;
 
-        // TODO: Not sure this is needed/used [VERIFY if this is used]
-        //when(mockExchangeClient.getRate(any(String.class)))
-        //        .thenReturn(Mono.just(rate0));
+        // arrange mocks
+        TestUtils.addExchangeApiServer1Response(from, to, rate1);
 
-        exchangeApiServer1.enqueue(new MockResponse()
-                .setBody(rate1.toString())
-                .addHeader("Content-Type", "application/json"));
-
-        exchangeApiServer2.enqueue(new MockResponse()
-                .setBody(rate2.toString())
-                .addHeader("Content-Type", "application/json"));
-
+        // assert
         StepVerifier.create(currencyService.convert(from, to, amount))
                 .expectNext(amount*rate1)
                 .verifyComplete();
@@ -163,31 +103,18 @@ public class IntegrationTestCurrencyService {
 
     @Test
     void testConvert_Api1_Returns_404() {
-        //doNothing().when(mockApiConfig).shuffle();
-        //when(mockApiConfig.getBaseUrls()).thenThrow(RuntimeException.class);
-        //when(mockApiConfig.getRateUrls()).thenReturn(Arrays.asList("/latest=<FROM>,<TO>", "/<FROM>"));
-
+        // arrange input
+        // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EUR";
         String to = "USD";
         double amount = 40;
-        //Double rate1 = 1.325;
         Double rate2 = 2.620;
-        //Double rate0 = 0.06;
 
-        // TODO: Not sure this is needed/used [VERIFY if this is used]
-        //when(mockExchangeClient.getRate(any(String.class)))
-        //        .thenReturn(Mono.just(rate0));
+        // arrange mocks
+        TestUtils.addExchangeApiServer1ErrorResponse("404", "NOT FOUND");
+        TestUtils.addExchangeApiServer2Response(from, to, rate2);
 
-        exchangeApiServer1.enqueue(new MockResponse()
-                .setStatus("404")
-                .setBody("NOT FOUND")
-                .addHeader("Content-Type", "application/json"));
-
-        // TODO: ExchangeData with all rates should be returned, not single rate
-        exchangeApiServer2.enqueue(new MockResponse()
-                .setBody(rate2.toString())
-                .addHeader("Content-Type", "application/json"));
-
+        // assert
         StepVerifier.create(currencyService.convert(from, to, amount))
                 .expectNext(amount*rate2)
                 .verifyComplete();
@@ -195,22 +122,15 @@ public class IntegrationTestCurrencyService {
 
     @Test
     void testConvert_Api1_Request_Timeout() {
+        // arrange input
         // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EUR";
         String to = "USD";
         double amount = 40;
-        Double rate1 = 1.425;
         Double rate2 = 2.639;
-        Double rate0 = 0.16;
-
-        // TODO: Not sure this is needed/used [VERIFY if this is used]
-        //when(mockExchangeClient.getRate(any(String.class)))
-        //        .thenReturn(Mono.just(rate0));
 
         // TODO: ExchangeData with all rates should be returned, not single rate
-        exchangeApiServer2.enqueue(new MockResponse()
-                .setBody(rate2.toString())
-                .addHeader("Content-Type", "application/json"));
+        TestUtils.addExchangeApiServer2Response(from, to, rate2);
 
         StepVerifier.create(currencyService.convert(from, to, amount))
                 .expectNext(amount*rate2)
@@ -219,6 +139,7 @@ public class IntegrationTestCurrencyService {
 
     @Test
     void testConvert_Both_Api_Request_Timeout() {
+        // arrange inputs
         // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EUR";
         String to = "USD";
@@ -227,92 +148,63 @@ public class IntegrationTestCurrencyService {
         Double rate2 = 8.60;
         Double rate0 = 20.06;
 
-        // TODO: Not sure this is needed/used [VERIFY if this is used]
-        //when(mockExchangeClient.getRate(any(String.class)))
-        //        .thenReturn(Mono.just(rate0));
-
+        // assert
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectError()
+                .expectErrorMessage("Request timed out")
                 .verify();
     }
 
     @Test
     void testConvert_From_BadInput() {
+        // arrange inputs
         // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EURX";
         String to = "USD";
         double amount = 40;
         Double rate1 = 13.25;
         Double rate2 = 22.60;
-        Double rate0 = 05.06;
 
-        // TODO: Not sure this is needed/used [VERIFY if this is used]
-        //when(mockExchangeClient.getRate(any(String.class)))
-        //        .thenReturn(Mono.just(rate0));
-        exchangeApiServer1.enqueue(new MockResponse()
-                .setBody(rate1.toString())
-                .addHeader("Content-Type", "application/json"));
+        // arrange mocks
+        TestUtils.addExchangeApiServer1Response(from, to, rate1);
+        TestUtils.addExchangeApiServer2Response(from, to, rate2);
 
-        exchangeApiServer2.enqueue(new MockResponse()
-                .setBody(rate2.toString())
-                .addHeader("Content-Type", "application/json"));
-
+        // assert
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectError()
+                .expectErrorMessage("base does not exist in API")
                 .verify();
     }
 
     @Test
     void testConvert_To_BadInput() {
+        // arrange inputs
         // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EUR";
         String to = "USDX";
         double amount = 40;
         Double rate1 = 44.25;
         Double rate2 = 56.60;
-        Double rate0 = 99.06;
 
-        // TODO: Not sure this is needed/used [VERIFY if this is used]
-        //when(mockExchangeClient.getRate(any(String.class)))
-        //        .thenReturn(Mono.just(rate0));
+        // arrange mocks
+        TestUtils.addExchangeApiServer1Response(from, to, rate1);
+        TestUtils.addExchangeApiServer2Response(from, to, rate2);
 
-        exchangeApiServer1.enqueue(new MockResponse()
-                .setBody(rate1.toString())
-                .addHeader("Content-Type", "application/json"));
-
-        exchangeApiServer2.enqueue(new MockResponse()
-                .setBody(rate2.toString())
-                .addHeader("Content-Type", "application/json"));
-
+        // assert
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectError()
+                .expectErrorMessage("to does not exist in API")
                 .verify();
     }
 
     @Test
     void testConvert_Amount_BadInput() {
+        // arrange inputs
         // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EUR";
         String to = "USD";
         double amount = -40;
-        Double rate1 = 101.25;
-        Double rate2 = 102.60;
-        Double rate0 = 100.06;
 
-        // TODO: Not sure this is needed/used [VERIFY if this is used]
-        //when(mockExchangeClient.getRate(any(String.class)))
-        //        .thenReturn(Mono.just(rate0));
-
-        exchangeApiServer1.enqueue(new MockResponse()
-                .setBody(rate1.toString())
-                .addHeader("Content-Type", "application/json"));
-
-        exchangeApiServer2.enqueue(new MockResponse()
-                .setBody(rate2.toString())
-                .addHeader("Content-Type", "application/json"));
-
+        // assert
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectError()
+                .expectErrorMessage("amount is less than zero")
                 .verify();
     }
 
@@ -324,23 +216,15 @@ public class IntegrationTestCurrencyService {
         double amount = 40;
         Double rate1 = -1000.25;
         Double rate2 = -2000.60;
-        Double rate0 = -896.06;
-
-        // TODO: Not sure this is needed/used [VERIFY if this is used]
-        //when(mockExchangeClient.getRate(any(String.class)))
-        //        .thenReturn(Mono.just(-5.0));
-
-        exchangeApiServer1.enqueue(new MockResponse()
-                .setBody(rate1.toString())
-                .addHeader("Content-Type", "application/json"));
-
-        exchangeApiServer2.enqueue(new MockResponse()
-                .setBody(rate2.toString())
-                .addHeader("Content-Type", "application/json"));
 
 
+        // arrange mocks
+        TestUtils.addExchangeApiServer1Response(from, to, rate1);
+        TestUtils.addExchangeApiServer2Response(from, to, rate2);
+
+        // assert
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectError()
+                .expectErrorMessage("Rate returned by API is negative")
                 .verify();
 
     }

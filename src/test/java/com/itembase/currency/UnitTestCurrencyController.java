@@ -14,7 +14,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.mockito.Mockito.when;
 
@@ -51,9 +50,9 @@ public class UnitTestCurrencyController {
         currencyTypeList.add("EUR");
         currencyTypeList.add("USD");
 
-        String from = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 101);
+        String from = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
+        String to = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
+        double originalAmount = TestUtils.random().nextDouble(0, 101);
         double convertedAmount = -1.0;
 
         if(from == to || originalAmount == 0)
@@ -62,7 +61,7 @@ public class UnitTestCurrencyController {
         }
         else
         {
-            convertedAmount = ThreadLocalRandom.current().nextDouble(0, 101);
+            convertedAmount = TestUtils.random().nextDouble(0, 101);
         }
 
         ConversionRequest conversionRequest = new ConversionRequest();
@@ -107,20 +106,10 @@ public class UnitTestCurrencyController {
         String from="";
         String to="";
         double originalAmount=0;
-        double convertedAmount=0;
         String errorCode = "UnhandledException";
         String message = "some Random error message";
 
-        ConversionRequest conversionRequest = new ConversionRequest();
-        conversionRequest.setFrom(from);
-        conversionRequest.setTo(to);
-        conversionRequest.setAmount(originalAmount);
-
-        ConversionResponse conversionResponse = new ConversionResponse();
-        conversionResponse.setFrom(from);
-        conversionResponse.setTo(to);
-        conversionResponse.setAmount(originalAmount);
-        conversionResponse.setConverted(convertedAmount);
+        var conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
 
         // arrange mock
         when(mockCurrencyService.convert(from,to,originalAmount))
@@ -159,9 +148,9 @@ public class UnitTestCurrencyController {
         currencyTypeList.add("  eUr");
         currencyTypeList.add("usd");
 
-        String from = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 101);
+        String from = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
+        String to = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
+        double originalAmount = TestUtils.random().nextDouble(0, 101);
         double convertedAmount = -1.0;
 
         if(from == to || originalAmount == 0)
@@ -170,19 +159,10 @@ public class UnitTestCurrencyController {
         }
         else
         {
-            convertedAmount = ThreadLocalRandom.current().nextDouble(0, 101);
+            convertedAmount = TestUtils.random().nextDouble(0, 101);
         }
 
-        ConversionRequest conversionRequest = new ConversionRequest();
-        conversionRequest.setFrom(from);
-        conversionRequest.setTo(to);
-        conversionRequest.setAmount(originalAmount);
-
-        ConversionResponse conversionResponse = new ConversionResponse();
-        conversionResponse.setFrom(from);
-        conversionResponse.setTo(to);
-        conversionResponse.setAmount(originalAmount);
-        conversionResponse.setConverted(convertedAmount);
+        var conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
 
         // arrange mock
         Mono<Double> convertedAmountMono = Mono.just(convertedAmount);
@@ -221,36 +201,18 @@ public class UnitTestCurrencyController {
         notInList.add("ZMK");
         notInList.add("YER");
 
-        String from = notInList.get(ThreadLocalRandom.current().nextInt(notInList.size()));
-        String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 101);
-        double convertedAmount = -1.0;
+        String from = notInList.get(TestUtils.random().nextInt(notInList.size()));
+        String to = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
+        double originalAmount = TestUtils.random().nextDouble(0, 101);
         String errorCode = "NotFound";
-
-        if(from == to || originalAmount == 0)
-        {
-            convertedAmount = originalAmount;
-        }
-        else
-        {
-            convertedAmount = ThreadLocalRandom.current().nextDouble(0, 101);
-        }
-
-        ConversionRequest conversionRequest = new ConversionRequest();
-        conversionRequest.setFrom(from);
-        conversionRequest.setTo(to);
-        conversionRequest.setAmount(originalAmount);
-
-        ErrorResponse errorResponse = new ErrorResponse();
-        String message ="'from' value not found";
-        errorResponse.setErrorCode(errorCode);
-        errorResponse.setMessage(message);
+        var errorMessage = "'from' value not found";
+        var conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
 
         // arrange mock
         when(mockCurrencyService.convert(from,to,originalAmount))
-                .thenThrow(new CurrencyException(errorCode,message));
+                .thenThrow(new CurrencyException(errorCode,errorMessage));
 
-        // act, assert
+        // act
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")
@@ -263,12 +225,13 @@ public class UnitTestCurrencyController {
 
         var theBody = theResponse.expectBody();
 
+        // assert
         theBody.jsonPath("$.from").doesNotExist()
                 .jsonPath("$.to").doesNotExist()
                 .jsonPath("$.amount").doesNotExist()
                 .jsonPath("$.converted").doesNotExist()
                 .jsonPath("$.errorCode").isEqualTo(errorCode)
-                .jsonPath("$.message").isEqualTo(message);
+                .jsonPath("$.message").isEqualTo(errorMessage);
 
     }
 
@@ -308,9 +271,9 @@ public class UnitTestCurrencyController {
         badTypeList.add("XXX,EUR,USD");
         badTypeList.add("EUR,XXX,USD");
 
-        String from = badTypeList.get(ThreadLocalRandom.current().nextInt(badTypeList.size()));
-        String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 101);
+        String from = badTypeList.get(TestUtils.random().nextInt(badTypeList.size()));
+        String to = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
+        double originalAmount = TestUtils.random().nextDouble(0, 101);
         double convertedAmount = -1.0;
 
         if(from == to || originalAmount == 0)
@@ -319,7 +282,7 @@ public class UnitTestCurrencyController {
         }
         else
         {
-            convertedAmount = ThreadLocalRandom.current().nextDouble(0, 101);
+            convertedAmount = TestUtils.random().nextDouble(0, 101);
         }
 
         ConversionRequest conversionRequest = new ConversionRequest();
@@ -329,15 +292,15 @@ public class UnitTestCurrencyController {
 
         ErrorResponse errorResponse = new ErrorResponse();
         String errorCode = "BadInput";
-        String message ="'from' value invalid";
+        String errorMessage ="'from' value invalid";
         errorResponse.setErrorCode(errorCode);
-        errorResponse.setMessage(message);
+        errorResponse.setMessage(errorMessage);
 
         // arrange mock
         when(mockCurrencyService.convert(from,to,originalAmount))
-                .thenThrow(new IllegalArgumentException(message));
+                .thenThrow(new IllegalArgumentException(errorMessage));
 
-        // act, assert
+        // act
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")
@@ -350,12 +313,13 @@ public class UnitTestCurrencyController {
 
         var theBody = theResponse.expectBody();
 
+        // assert
         theBody.jsonPath("$.from").doesNotExist()
                 .jsonPath("$.to").doesNotExist()
                 .jsonPath("$.amount").doesNotExist()
                 .jsonPath("$.converted").doesNotExist()
                 .jsonPath("$.errorCode").isEqualTo(errorCode)
-                .jsonPath("$.message").isEqualTo(message);
+                .jsonPath("$.message").isEqualTo(errorMessage);
 
     }
 }

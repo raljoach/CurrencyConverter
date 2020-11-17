@@ -98,12 +98,14 @@ public class End2EndTestCurrencyController {
 
     @Test
     void testConvert() {
-        // arrange input, output
+        // arrange input
         String from = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
         String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1000000000);
+        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1_000_000_001);
 
-        ConversionRequest conversionRequest = Utils.createConversionRequest(from, to, originalAmount);
+        ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
+
+        // act
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")
@@ -116,6 +118,7 @@ public class End2EndTestCurrencyController {
 
         var theBody = theResponse.expectBody();
 
+        //assert
         theBody.jsonPath("$.from").isEqualTo(from)
                 .jsonPath("$.to").isEqualTo(to)
                 .jsonPath("$.amount").isEqualTo(originalAmount)
@@ -127,11 +130,14 @@ public class End2EndTestCurrencyController {
 
     @Test
     void testConvert_From_BadInput() {
+        // arrange input
         String from = "EURX";
         String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1000000000);
+        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1_000_000_001);
 
-        ConversionRequest conversionRequest = Utils.createConversionRequest(from, to, originalAmount);
+        ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
+
+        // assert
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")
@@ -145,11 +151,14 @@ public class End2EndTestCurrencyController {
 
     @Test
     void testConvert_To_BadInput() {
+        // arrange input
         String to = "EURX";
         String from = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1000000000);
+        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1_000_000_001);
 
-        ConversionRequest conversionRequest = Utils.createConversionRequest(from, to, originalAmount);
+        ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
+
+        // assert
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")
@@ -163,11 +172,14 @@ public class End2EndTestCurrencyController {
 
     @Test
     void testConvert_Amount_BadInput() {
-        String from = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
+        // arrange input
+        String from = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
+        String to = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
         double originalAmount = -40;
 
-        ConversionRequest conversionRequest = Utils.createConversionRequest(from, to, originalAmount);
+        ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
+
+        // assert
         var theResponse =
                 webTestClient.post()
                         .uri("/currency/convert")
