@@ -13,11 +13,12 @@ import java.util.concurrent.ThreadLocalRandom;
 @ConfigurationProperties("exchange")
 public class ApiConfig {
     private boolean useShuffle;
-    private long requestTimeout=10_000;
+    private int requestTimeout=10_000;
     private List<String> baseUrls = new ArrayList<String>();
     private List<String> rateUrls = new ArrayList<String>();
 
     public boolean getUseShuffle() {
+
         return useShuffle;
     }
 
@@ -31,26 +32,22 @@ public class ApiConfig {
     }
 
     public List<String> getRateUrls() {
-
         return rateUrls;
     }
 
     public void setUseShuffle(boolean useShuffle) {
-
         this.useShuffle = useShuffle;
     }
 
-    public void setRequestTimeout(long requestTimeout) {
+    public void setRequestTimeout(int requestTimeout) {
         this.requestTimeout = requestTimeout;
     }
 
     public void setBaseUrls(List<String> baseUrls) {
-
         this.baseUrls = baseUrls;
     }
 
     public void setRateUrls(List<String> rateUrls){
-
         this.rateUrls = rateUrls;
     }
 

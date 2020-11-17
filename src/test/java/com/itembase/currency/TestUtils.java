@@ -101,11 +101,13 @@ public class TestUtils {
                 .addHeader("Content-Type", "application/json"));
     }
 
-    public static void addExchangeApiServer1ErrorResponse(String status, String response) {
+    public static void addExchangeApiServer1ErrorResponse(int status, String response) {
         exchangeApiServer1.enqueue(new MockResponse()
-                .setStatus(status)
+                .setResponseCode(status)
+                //.setStatus("HTTP 1.1 "+status + " FOO")
                 .setBody(response)
-                .addHeader("Content-Type", "application/json"));
+                .addHeader("Content-Type", "application/json")
+                );
     }
 
     public static void addExchangeApiServer2Response(String from, String to, double rate){
@@ -118,11 +120,13 @@ public class TestUtils {
                 .addHeader("Content-Type", "application/json"));
     }
 
-    public static void addExchangeApiServer2ErrorResponse(String status, String response) {
+    public static void addExchangeApiServer2ErrorResponse(int status, String response) {
         exchangeApiServer2.enqueue(new MockResponse()
-                .setStatus(status)
+                .setResponseCode(status)
+                //.setStatus("HTTP 1.1 "+status + " FOO")
                 .setBody(response)
-                .addHeader("Content-Type", "application/json"));
+                .addHeader("Content-Type", "application/json")
+        );
     }
 
     public static ConversionRequest createConversionRequest(String from, String to, double originalAmount) {
@@ -153,25 +157,27 @@ public class TestUtils {
         StringBuilder result = new StringBuilder("{\n");
         result.append("\"rates\": { \n");
         result.append(createStr(rates));
-        result.append("},\n\"");
+        result.append("},\n");
         result.append("\"base\": \""+base+"\", \n");
         result.append("\"date\": \"2020-11-02\" \n");
         result.append("}");
+        System.out.println(result.toString());
         return result.toString();
     }
 
     public static String creatApiDataResponse2(String base, Map<String, Double> rates) {
         StringBuilder result = new StringBuilder("{\n");
-        appendKeyValueToStr(result, "result", "\"success\"");
-        appendKeyValueToStr(result, "documentation", "\"success\"");
-        appendKeyValueToStr(result, "terms_of_use", "\"success\"");
-        appendKeyValueToStr(result, "time_last_update_unix", "\"success\"");
-        appendKeyValueToStr(result, "time_last_update_utc", "\"success\"");
-        appendKeyValueToStr(result, "time_next_update_unix", "\"success\"");
-        appendKeyValueToStr(result, "time_next_update_utc", "\"success\"");
-        appendKeyValueToStr(result, "base_code", "\""+base+"\"");
-        appendKeyValueToStr(result, "conversion_rates", "{\n" + createStr(rates) + "\n}");
+        appendKeyValueToStr1(result, "result", "\"success\"");
+        appendKeyValueToStr1(result, "documentation", "\"success\"");
+        appendKeyValueToStr1(result, "terms_of_use", "\"success\"");
+        appendKeyValueToStr1(result, "time_last_update_unix", "\"1604361610\"");
+        appendKeyValueToStr1(result, "time_last_update_utc", "\"Tue, 03 Nov 2020 00:00:10 +0000\"");
+        appendKeyValueToStr1(result, "time_next_update_unix", "\"1604448130\"");
+        appendKeyValueToStr1(result, "time_next_update_utc", "\"Wed, 04 Nov 2020 00:02:10 +0000\"");
+        appendKeyValueToStr1(result, "base_code", "\""+base+"\"");
+        appendNewLine(appendKeyValueToStr2(result, "conversion_rates", "{\n" + createStr(rates) + "\n}"));
         result.append("}\n");
+        System.out.println(result.toString());
         return result.toString();
     }
 
@@ -206,8 +212,22 @@ public class TestUtils {
         result.append(result).append(": ").append(value);
 
      */
-    private static void appendKeyValueToStr(StringBuilder result, String key, String value) {
-        result.append(result).append(": ").append(value).append("\n");
+    private static StringBuilder appendKeyValueToStr1(StringBuilder result, String key, String value) {
+        return result.append("\"").append(key).append("\"").append(": ").append(value).append(",").append("\n");
+    }
+
+    private static StringBuilder appendKeyValueToStr2(StringBuilder result, String key, String value) {
+        return result.append("\"").append(key).append("\"").append(": ").append(value);
+    }
+
+    public static StringBuilder appendComma(StringBuilder result)
+    {
+        return result.append(",");
+    }
+
+    public static StringBuilder appendNewLine(StringBuilder result)
+    {
+        return result.append("\n");
     }
 
     private static String createStr(Map<String, Double> rates) {
@@ -225,7 +245,8 @@ public class TestUtils {
             }
             result.append("\"" +  currency + "\":" + rate);
         }
-        result.append("\n\"");
+        result.append("\n");
+        System.out.println(result.toString());
         return result.toString();
     }
 
@@ -236,8 +257,8 @@ public class TestUtils {
     }
 
     public static void setConfig(DynamicPropertyRegistry r, Boolean useShuffle) {
-        //r.add("requestTimeout", () -> "1000");
-        r.add("useShuffle", () -> useShuffle.toString());
+        //r.add("exchange.requestTimeout", () -> "1000");
+        r.add("exchange.useShuffle", () -> useShuffle.toString());
         r.add("exchange.baseUrls[0]", () -> String.format("http://localhost:%s",8181));
         //exchangeApiServer1.getPort()));
         r.add("exchange.baseUrls[1]", () -> String.format("http://localhost:%s",7171));

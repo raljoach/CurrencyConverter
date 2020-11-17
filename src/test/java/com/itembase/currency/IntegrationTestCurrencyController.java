@@ -112,7 +112,7 @@ public class IntegrationTestCurrencyController {
         String from = "EURX";
         String to = "USD";
         double amount = 40;
-        var status = "400";
+        int status = 400;
         var errorMessage ="base does not exist in API";
 
         ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, amount);
@@ -149,7 +149,7 @@ public class IntegrationTestCurrencyController {
         String from = "EUR";
         String to = "USDX";
         double amount = 40;
-        var status = "400";
+        int status = 400;
         var errorMessage ="to does not exist in API";
 
         ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, amount);

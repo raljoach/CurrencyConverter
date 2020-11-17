@@ -21,7 +21,7 @@ public class ExchangeData {
 
     @JsonProperty("date")
     @JsonAlias("time_last_update_utc")
-    private LocalDateTime lastUpdate;
+    private String lastUpdate;
 
     @JsonProperty("rates")
     @JsonAlias("conversion_rates")
@@ -31,7 +31,7 @@ public class ExchangeData {
         return this.base;
     }
 
-    public LocalDateTime getLastUpdate() {
+    public String getLastUpdate() {
         return this.lastUpdate;
     }
 
@@ -55,7 +55,7 @@ public class ExchangeData {
         this.base = base;
     }
 
-    public void setLastUpdate(LocalDateTime dateTime) {
+    public void setLastUpdate(String dateTime) {
         this.lastUpdate = dateTime;
     }
 

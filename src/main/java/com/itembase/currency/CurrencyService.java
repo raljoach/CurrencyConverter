@@ -1,10 +1,7 @@
 package com.itembase.currency;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 // TODO: https://developer.okta.com/blog/2018/09/24/reactive-apis-with-spring-webflux
@@ -129,18 +126,55 @@ public class CurrencyService {
 
      */
     private Mono<Double> getRate(String from, String to) {
-        return tryClient(0, from, to)
-                .log()
-                .flatMap(rate1 -> { System.out.println("Using rate1: " + rate1); return Mono.just(rate1);} )
-                .onErrorResume(e->
-                        tryClient(1, from, to)
-                        .flatMap(rate2 ->{ System.out.println("Using rate2: " + rate2); return Mono.just(rate2); })
-                        .onErrorResume(
-                                e2 -> Mono.error(
-                                        new ApiException(
-                                             "RateError",
-                                              e2))));
+        //try {
 
+        var i=0;
+        String apiClientUrl = apiConfig.getBaseUrls().get(i);
+        String rateUrl = rateUrl(apiConfig.getRateUrls().get(i), from, to);
+            return makeRequestForRate(apiClientUrl, rateUrl, to)
+                    .log()
+                    .onErrorResume(e -> {
+                                System.out.println("E1: " +e.getMessage());
+                                var j=1;
+                                var apiClientUrl2 = apiConfig.getBaseUrls().get(j);
+                                var rateUrl2 = rateUrl(apiConfig.getRateUrls().get(j), from, to);
+                                return makeRequestForRate(apiClientUrl2, rateUrl, to)
+                                        .log()
+                                        /*.onErrorResume(
+                                                e2 -> {
+
+                                                    System.out.println("E2: " +e2.getMessage());
+                                                    return Mono.error(
+                                                            new ApiException(
+                                                                    //"RateError2 " + apiClientUrl2 + rateUrl2,
+                                                                    "RateError2",
+                                                                    apiClientUrl + rateUrl + " "+ e2.toString() + e2.getMessage()));
+                                                                    //e2));
+
+                                                })*/
+                                        .flatMap(rate2 -> {
+                                                    System.out.println("Using rate2: " + rate2);
+                                                    return Mono.just(rate2);
+                                                }
+                                        );
+                            }
+                    /*
+                .flatMap(x->{
+                    System.out.println("Using rate3: " + x); return Mono.just(x);
+                })*/
+                    )
+                    .flatMap(rate1 -> {
+                        System.out.println("Using rate1: " + rate1);
+                        return Mono.just(rate1);
+                    });
+        /*}
+        catch(Exception ex)
+        {
+            return Mono.error(
+                    new ApiException(
+                            "RateError",
+                            ex));
+        }*/
     }
 
     /* Pseudocode:
@@ -152,10 +186,12 @@ public class CurrencyService {
              .contentType("application/json")
              .subscribe();
      */
-    private Mono<Double> tryClient(int i, String from, String to){
-        String apiClientUrl = apiConfig.getBaseUrls().get(i);
-        String rateUrl = rateUrl(apiConfig.getRateUrls().get(i), from, to);
-        return new ExchangeClient(apiClientUrl, apiConfig.getRequestTimeout()).getRate(rateUrl, to);
+    private Mono<Double> makeRequestForRate(String apiClientUrl, String rateUrl, String to){
+
+        return new ExchangeClient(apiClientUrl, apiConfig.getRequestTimeout()).getRate(rateUrl, to)
+                .onErrorResume(e->Mono.error(new ApiException(
+                        "RateError1", apiClientUrl + rateUrl + " "+ e.toString() + e.getMessage()
+                )));
     }
 
     /* Pseudocode:

@@ -1,18 +1,22 @@
 package com.itembase.currency;
 
+import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(CurrencyService.class)
@@ -111,7 +115,7 @@ public class IntegrationTestCurrencyService {
         Double rate2 = 2.620;
 
         // arrange mocks
-        TestUtils.addExchangeApiServer1ErrorResponse("404", "NOT FOUND");
+        TestUtils.addExchangeApiServer1ErrorResponse(404, "NOT FOUND");
         TestUtils.addExchangeApiServer2Response(from, to, rate2);
 
         // assert
@@ -136,7 +140,8 @@ public class IntegrationTestCurrencyService {
                 .expectNext(amount*rate2)
                 .verifyComplete();
     }
-
+    //@Rule
+    //public final ExpectedException exception = ExpectedException.none();
     @Test
     void testConvert_Both_Api_Request_Timeout() {
         // arrange inputs
@@ -147,11 +152,26 @@ public class IntegrationTestCurrencyService {
         Double rate1 = 4.25;
         Double rate2 = 8.60;
         Double rate0 = 20.06;
+        var errorMessage = "RateError Request timed out";
+        // assert
+        var action =currencyService.convert(from, to, amount);
+        //exception.expect(ApiException.class);
+        //exception.expectMessage(errorMessage);
+        //Mono.when(action).block();
+        //Assert.assertThrows()
+        var theException = assertThrows(ApiException.class,()->Mono.when(action).block());
+        Assertions.assertNotNull(theException);
+        System.out.println("TEST DEBUG:");
+        System.out.println("theException.ErrorType: " + theException.getErrorType());
+        System.out.println("theException.Message: " + theException.getMessage());
+        assertTrue(theException.getErrorType().contains("RateError"));
+        assertTrue(theException.getMessage().contains("TimeoutException"));
 
         // assert
+        /*
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectErrorMessage("Request timed out")
-                .verify();
+                .expectErrorMessage()
+                .verify();*/
     }
 
     @Test
@@ -161,7 +181,7 @@ public class IntegrationTestCurrencyService {
         String from = "EURX";
         String to = "USD";
         double amount = 40;
-        var status = "400";
+        int status = 400;
         var errorMessage ="base does not exist in API";
 
         // arrange mocks
@@ -169,9 +189,13 @@ public class IntegrationTestCurrencyService {
         TestUtils.addExchangeApiServer1ErrorResponse(status, errorMessage);
 
         // assert
-        StepVerifier.create(currencyService.convert(from, to, amount))
+        var action =currencyService.convert(from, to, amount);
+        assertThrows(ApiException.class,()->Mono.when(action).block(),errorMessage);
+
+/*        StepVerifier.create(action)
                 .expectErrorMessage(errorMessage)
                 .verify();
+                */
     }
 
     @Test
@@ -181,17 +205,22 @@ public class IntegrationTestCurrencyService {
         String from = "EUR";
         String to = "USDX";
         double amount = 40;
-        var status = "400";
+        int status = 400;
         var errorMessage ="to does not exist in API";
 
         // arrange mocks
         TestUtils.addExchangeApiServer1ErrorResponse(status, errorMessage);
-        TestUtils.addExchangeApiServer1ErrorResponse(status, errorMessage);
+        TestUtils.addExchangeApiServer2ErrorResponse(status, errorMessage);
 
         // assert
-        StepVerifier.create(currencyService.convert(from, to, amount))
+        var action =currencyService.convert(from, to, amount);
+        assertThrows(ApiException.class,()->Mono.when(action).block(),errorMessage);
+
+/*        StepVerifier.create(action)
                 .expectErrorMessage(errorMessage)
                 .verify();
+                */
+
     }
 /*
     @Test
@@ -207,7 +236,7 @@ public class IntegrationTestCurrencyService {
                 .expectErrorMessage("amount is less than zero")
                 .verify();
     }
-*/
+
     @Test
     void testConvert_Rate_BadInput() {
         // TODO: Use Random values for inputs i.e. RandomUtils
@@ -228,6 +257,7 @@ public class IntegrationTestCurrencyService {
                 .verify();
 
     }
+*/
 
     // TODO: CurrencyService integration test cases
     /*
