@@ -322,6 +322,8 @@ public class UnitTestCurrencyController {
 
         var theBody = theResponse.expectBody();
 
+        debug(theResponse);
+
         // assert
         theBody.jsonPath("$.from").doesNotExist()
                 .jsonPath("$.to").doesNotExist()
@@ -330,6 +332,14 @@ public class UnitTestCurrencyController {
                 .jsonPath("$.errorCode").isEqualTo(errorCode)
                 .jsonPath("$.message").isEqualTo(errorMessage);
 
+    }
+
+    private void debug(WebTestClient.ResponseSpec theResponse) {
+        theResponse.expectBody(String.class).consumeWith(
+                response->{
+                    var body = response.getResponseBody();
+                    System.out.println(body);
+                });
     }
 
     @Test
