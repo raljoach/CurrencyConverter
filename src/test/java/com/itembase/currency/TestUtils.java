@@ -264,4 +264,8 @@ public class TestUtils {
         r.add("exchange.baseUrls[1]", () -> String.format("http://localhost:%s",7171));
         //exchangeApiServer2.getPort()));
     }
+
+    public static void setShuffle(DynamicPropertyRegistry r, Boolean useShuffle) {
+        r.add("exchange.useShuffle", () -> useShuffle.toString());
+    }
 }

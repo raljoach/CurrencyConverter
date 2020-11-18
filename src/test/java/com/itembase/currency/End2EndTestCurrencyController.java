@@ -8,10 +8,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -96,9 +100,15 @@ public class End2EndTestCurrencyController {
         currencyTypeList.add("ZAR");
     }
 
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry r) throws IOException {
+        TestUtils.setShuffle(r, false);
+    }
+
     @Test
     void testConvert() {
         // arrange input
+        //String from = "GTQ";
         String from = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
         String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
         double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1_000_000_001);
@@ -107,7 +117,8 @@ public class End2EndTestCurrencyController {
 
         // act
         var theResponse =
-                webTestClient.post()
+                webTestClient.mutate()
+                        .responseTimeout(Duration.ofMillis(50000)).build().post()
                         .uri("/currency/convert")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -139,7 +150,8 @@ public class End2EndTestCurrencyController {
 
         // assert
         var theResponse =
-                webTestClient.post()
+                webTestClient.mutate()
+                        .responseTimeout(Duration.ofMillis(50000)).build().post()
                         .uri("/currency/convert")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -160,7 +172,8 @@ public class End2EndTestCurrencyController {
 
         // assert
         var theResponse =
-                webTestClient.post()
+                webTestClient.mutate()
+                        .responseTimeout(Duration.ofMillis(50000)).build().post()
                         .uri("/currency/convert")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -181,7 +194,8 @@ public class End2EndTestCurrencyController {
 
         // assert
         var theResponse =
-                webTestClient.post()
+                webTestClient.mutate()
+                        .responseTimeout(Duration.ofMillis(50000)).build().post()
                         .uri("/currency/convert")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)

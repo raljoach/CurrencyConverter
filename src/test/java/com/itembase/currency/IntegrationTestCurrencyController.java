@@ -16,9 +16,12 @@ import org.springframework.web.reactive.function.BodyInserters;
 import reactor.test.StepVerifier;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 /* Functional Tests of /currency/convert api of CurrencyController
@@ -113,7 +116,7 @@ public class IntegrationTestCurrencyController {
         String to = "USD";
         double amount = 40;
         int status = 400;
-        var errorMessage ="base does not exist in API";
+        var errorMessage ="400 Bad Request from GET http://localhost:";
 
         ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, amount);
 
@@ -138,8 +141,16 @@ public class IntegrationTestCurrencyController {
                 .jsonPath("$.to").doesNotExist()
                 .jsonPath("$.amount").doesNotExist()
                 .jsonPath("$.converted").doesNotExist()
-                .jsonPath("$.errorCode").isEqualTo("BadInput")
-                .jsonPath("$.message").isEqualTo(errorMessage);
+                .jsonPath("$.errorCode").isEqualTo("RateError");
+                //.jsonPath("$.message").isEqualTo(errorMessage);
+
+
+        theResponse.expectBody(ErrorResponse.class).consumeWith(
+                response->{
+                    var err = response.getResponseBody();
+                    assertEquals("RateError", err.getErrorCode());
+                    assertTrue(err.getMessage().contains(errorMessage));
+                });
     }
 
     @Test
@@ -150,7 +161,7 @@ public class IntegrationTestCurrencyController {
         String to = "USDX";
         double amount = 40;
         int status = 400;
-        var errorMessage ="to does not exist in API";
+        var errorMessage ="400 Bad Request from GET http://localhost:";
 
         ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, amount);
 
@@ -160,7 +171,8 @@ public class IntegrationTestCurrencyController {
 
         /// assert
         var theResponse =
-                webTestClient.post()
+                webTestClient.mutate()
+                        .responseTimeout(Duration.ofMillis(50000)).build().post()
                         .uri("/currency/convert")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -175,7 +187,14 @@ public class IntegrationTestCurrencyController {
                 .jsonPath("$.to").doesNotExist()
                 .jsonPath("$.amount").doesNotExist()
                 .jsonPath("$.converted").doesNotExist()
-                .jsonPath("$.errorCode").isEqualTo("BadInput")
-                .jsonPath("$.message").isEqualTo(errorMessage);
+                .jsonPath("$.errorCode").isEqualTo("RateError");
+                //.jsonPath("$.message").isEqualTo(errorMessage);
+
+        theResponse.expectBody(ErrorResponse.class).consumeWith(
+                response->{
+                    var err = response.getResponseBody();
+                    assertEquals("RateError", err.getErrorCode());
+                    assertTrue(err.getMessage().contains(errorMessage));
+                });
     }
 }

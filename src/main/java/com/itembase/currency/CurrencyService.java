@@ -2,6 +2,7 @@ package com.itembase.currency;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 // TODO: https://developer.okta.com/blog/2018/09/24/reactive-apis-with-spring-webflux
@@ -128,17 +129,11 @@ public class CurrencyService {
     private Mono<Double> getRate(String from, String to) {
         //try {
 
-        var i=0;
-        String apiClientUrl = apiConfig.getBaseUrls().get(i);
-        String rateUrl = rateUrl(apiConfig.getRateUrls().get(i), from, to);
-            return makeRequestForRate(apiClientUrl, rateUrl, to)
+            return makeRequestForRate(0, from, to)
                     .log()
                     .onErrorResume(e -> {
                                 System.out.println("E1: " +e.getMessage());
-                                var j=1;
-                                var apiClientUrl2 = apiConfig.getBaseUrls().get(j);
-                                var rateUrl2 = rateUrl(apiConfig.getRateUrls().get(j), from, to);
-                                return makeRequestForRate(apiClientUrl2, rateUrl, to)
+                                return makeRequestForRate(1, from, to)
                                         .log()
                                         /*.onErrorResume(
                                                 e2 -> {
@@ -186,12 +181,22 @@ public class CurrencyService {
              .contentType("application/json")
              .subscribe();
      */
-    private Mono<Double> makeRequestForRate(String apiClientUrl, String rateUrl, String to){
+    private Mono<Double> makeRequestForRate(int i, String from, String to){
+
+        String apiClientUrl = apiConfig.getBaseUrls().get(i);
+        String rateUrl = rateUrl(apiConfig.getRateUrls().get(i), from, to);
 
         return new ExchangeClient(apiClientUrl, apiConfig.getRequestTimeout()).getRate(rateUrl, to)
-                .onErrorResume(e->Mono.error(new ApiException(
-                        "RateError1", apiClientUrl + rateUrl + " "+ e.toString() + e.getMessage()
-                )));
+                .onErrorResume(e->{
+                    if(e instanceof WebClientResponseException)
+                    {
+                        var internalError = ((WebClientResponseException)e).getResponseBodyAsString();
+                        return Mono.error(new ApiException("RateError", e, internalError));
+                    }
+                    return Mono.error(new ApiException(
+                            "RateError", /*apiClientUrl + rateUrl + " "+ e.toString() +*/ e//.getMessage()
+                    ));
+                });
     }
 
     /* Pseudocode:

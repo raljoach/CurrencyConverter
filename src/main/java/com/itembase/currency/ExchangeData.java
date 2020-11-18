@@ -27,6 +27,9 @@ public class ExchangeData {
     @JsonAlias("conversion_rates")
     private Map<String, Double> rates;
 
+    @JsonProperty("error")
+    public String error;
+
     public String getBase() {
         return this.base;
     }
@@ -37,6 +40,10 @@ public class ExchangeData {
 
     public Map<String, Double> getRates() {
         return this.rates;
+    }
+
+    public String getError() {
+        return this.error;
     }
 
     /* Pseudocode
@@ -62,6 +69,10 @@ public class ExchangeData {
     public void setRates(Map<String, Double> rates){
         this.rates = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.rates.putAll(rates);
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     /* Pseudocode

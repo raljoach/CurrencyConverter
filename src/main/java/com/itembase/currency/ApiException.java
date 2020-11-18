@@ -17,6 +17,10 @@ public class ApiException extends RuntimeException {
         this.setErrorType(errorType);
     }
 
+    public ApiException(String errorType, Throwable e, String internalError) {
+        this(errorType, e.getMessage() + " " + internalError);
+    }
+
     public String getErrorType() {
         return errorType;
     }

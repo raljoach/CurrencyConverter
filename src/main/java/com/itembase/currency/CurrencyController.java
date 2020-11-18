@@ -62,33 +62,43 @@ public class CurrencyController {
      */
     @PostMapping("/convert")
     public Mono<ResponseEntity<HttpResponse>> convert(@RequestBody ConversionRequest conversionRequest) {
-        try {
+        //try {
 
-            conversionRequest.validate();
-            ConversionResponse conversionResponse = new ConversionResponse();
-            conversionResponse.setFrom(conversionRequest.getFrom());
-            conversionResponse.setTo(conversionRequest.getTo());
-            conversionResponse.setAmount(conversionRequest.getAmount());
-            HttpResponse httpResponse = conversionResponse;
+            var inputRequestMono =
+                    Mono.just(conversionRequest);
 
-            //ok().build()
-            var serviceResponse = currencyService.convert(
-                    conversionRequest.getFrom(),
-                    conversionRequest.getTo(),
-                    conversionRequest.getAmount()).doOnNext(x->x.doubleValue());
 
-            var notFound = new ResponseEntity<ConversionResponse>(HttpStatus.NOT_FOUND);
-            var notFoundMono = Mono.just(notFound);
-            var res = serviceResponse
-                    .map(convertValue -> {
+            var serviceResponse = inputRequestMono.flatMap(request-> {
+                var errors = request.validate();
+                if(errors!=null)
+                {
+                    Mono.error(new ApiException("BadInput", errors));
+                }
+                return currencyService.convert(
+                        request.getFrom(),
+                        request.getTo(),
+                        request.getAmount()).doOnNext(x -> x.doubleValue());
+            });
+
+            return serviceResponse
+                    .flatMap(convertValue -> {
+                        ConversionResponse conversionResponse = new ConversionResponse();
+                        conversionResponse.setFrom(conversionRequest.getFrom());
+                        conversionResponse.setTo(conversionRequest.getTo());
+                        conversionResponse.setAmount(conversionRequest.getAmount());
+                        HttpResponse httpResponse = conversionResponse;
                         conversionResponse.setConverted(convertValue);
                         conversionResponse.validate();
                         var responseEntity = ok(httpResponse);
-                        return responseEntity;
-                    });//.block());
+                        return Mono.just(responseEntity);
+                    })
+                    .onErrorResume(e->{
+                        return handleError(e);
+                    })
+                    ;//.block());
                     //.subscribe();
                     //.defaultIfEmpty(ResponseEntity.notFound().build());
-            return res;
+            //return res;
             //return res;
                     //.defaultIfEmpty(ResponseEntity.notFound().build());;
 
@@ -116,11 +126,11 @@ public class CurrencyController {
 //                    .doOnSubscribe();
                     //.subscribe(x -> conversionResponse.setConverted(x));
             //return Mono.just(ResponseEntity.ok(conversionResponse));
-  */      }
+        }
         catch(Throwable ex)
         {
             return handleError(ex);
-        }
+        }*/
     }
 
     //TODO: @GetMapping /status
@@ -136,6 +146,10 @@ public class CurrencyController {
         else if(ex instanceof CurrencyException)
         {
             errorCode = ((CurrencyException) ex).getErrorCode();
+        }
+        else if(ex instanceof ApiException)
+        {
+            errorCode = ((ApiException) ex).getErrorType();
         }
 
         if(message == null || message.isBlank() || message.isEmpty())

@@ -30,12 +30,20 @@ public class ConversionRequest {
         data.setAmount(amount);
     }
 
-    public void validate() {
+    public String validate() {
         var validator = new ConversionDataValidator();
-        Errors errors = new BeanPropertyBindingResult(data, "person");
+        Errors errors = new BeanPropertyBindingResult(data, "ConversionRequest");
         validator.validate(data, errors);
-        if (errors.hasErrors()) {
-            throw new ApiException("BadInput",errors.toString());
+        //if (errors.hasErrors()) {
+        //    throw new ApiException("BadInput",errors.toString());
+        //}
+        //return this;
+
+        String res = null;
+        if(errors.hasErrors()) {
+            res = errors.toString();
         }
+        return res;
+
     }
 }
