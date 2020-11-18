@@ -5,6 +5,8 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.springframework.test.context.DynamicPropertyRegistry;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -267,5 +269,14 @@ public class TestUtils {
 
     public static void setShuffle(DynamicPropertyRegistry r, Boolean useShuffle) {
         r.add("exchange.useShuffle", () -> useShuffle.toString());
+    }
+
+    public static double currencyRound(double value) {
+        int places =2;
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }

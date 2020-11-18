@@ -16,6 +16,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import reactor.test.StepVerifier;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +81,7 @@ public class IntegrationTestCurrencyController {
         {
             convertedAmount = TestUtils.random().nextDouble(0, 101);
         }
-
+        convertedAmount  = TestUtils.currencyRound(convertedAmount);
         ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
 
         // arrange mocks
@@ -107,6 +109,8 @@ public class IntegrationTestCurrencyController {
                 .jsonPath("$.errorCode").doesNotExist()
                 .jsonPath("$.message").doesNotExist();
     }
+
+
 
     @Test
     void testConvert_From_DoesNotExist() {

@@ -5,6 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.concurrent.TimeoutException;
+
 // TODO: https://developer.okta.com/blog/2018/09/24/reactive-apis-with-spring-webflux
 // @Log4j2
 @Service
@@ -47,7 +51,15 @@ public class CurrencyService {
     public Mono<Double> convert(String from, String to, Double amount) {
         apiConfig.shuffle();
         Mono<Double> rateMono = getRate(from, to);
-        return rateMono.map(rate -> rate * amount);
+        return rateMono.map(rate -> round(rate * amount, 2));
+    }
+
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
     // TODO: https://stackoverflow.com/questions/62329617/webflux-webclient-re-try-with-different-url
@@ -192,6 +204,12 @@ public class CurrencyService {
                     {
                         var internalError = ((WebClientResponseException)e).getResponseBodyAsString();
                         return Mono.error(new ApiException("RateError", e, internalError));
+                    }
+                    else if(e instanceof TimeoutException)
+                    {
+                        return Mono.error(new ApiException(
+                                "RateError", apiClientUrl + rateUrl + " TimeoutException"
+                        ));
                     }
                     return Mono.error(new ApiException(
                             "RateError", /*apiClientUrl + rateUrl + " "+ e.toString() +*/ e//.getMessage()

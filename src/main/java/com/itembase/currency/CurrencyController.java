@@ -72,7 +72,7 @@ public class CurrencyController {
                 var errors = request.validate();
                 if(errors!=null)
                 {
-                    Mono.error(new ApiException("BadInput", errors));
+                    return Mono.error(new ApiException("BadInput", errors));
                 }
                 return currencyService.convert(
                         request.getFrom(),

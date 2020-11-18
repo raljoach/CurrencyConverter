@@ -95,13 +95,13 @@ public class IntegrationTestCurrencyService {
         String to = "USD";
         double amount = 40;
         Double rate1 = 1.125;
-
+        var convertedAmount  = TestUtils.currencyRound(amount*rate1);
         // arrange mocks
         TestUtils.addExchangeApiServer1Response(from, to, rate1);
 
         // assert
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectNext(amount*rate1)
+                .expectNext(convertedAmount)
                 .verifyComplete();
     }
 
@@ -113,14 +113,14 @@ public class IntegrationTestCurrencyService {
         String to = "USD";
         double amount = 40;
         Double rate2 = 2.620;
-
+        var convertedAmount  = TestUtils.currencyRound(amount*rate2);
         // arrange mocks
         TestUtils.addExchangeApiServer1ErrorResponse(404, "NOT FOUND");
         TestUtils.addExchangeApiServer2Response(from, to, rate2);
 
         // assert
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectNext(amount*rate2)
+                .expectNext(convertedAmount)
                 .verifyComplete();
     }
 
@@ -132,12 +132,12 @@ public class IntegrationTestCurrencyService {
         String to = "USD";
         double amount = 40;
         Double rate2 = 2.639;
-
+        var convertedAmount  = TestUtils.currencyRound(amount*rate2);
         // TODO: ExchangeData with all rates should be returned, not single rate
         TestUtils.addExchangeApiServer2Response(from, to, rate2);
 
         StepVerifier.create(currencyService.convert(from, to, amount))
-                .expectNext(amount*rate2)
+                .expectNext(convertedAmount)
                 .verifyComplete();
     }
     //@Rule
@@ -149,9 +149,6 @@ public class IntegrationTestCurrencyService {
         String from = "EUR";
         String to = "USD";
         double amount = 40;
-        Double rate1 = 4.25;
-        Double rate2 = 8.60;
-        Double rate0 = 20.06;
         var errorMessage = "RateError Request timed out";
         // assert
         var action =currencyService.convert(from, to, amount);

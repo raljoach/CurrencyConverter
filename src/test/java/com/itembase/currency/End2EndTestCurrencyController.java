@@ -99,12 +99,12 @@ public class End2EndTestCurrencyController {
         currencyTypeList.add("UYU");
         currencyTypeList.add("ZAR");
     }
-
+/*
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry r) throws IOException {
         TestUtils.setShuffle(r, false);
     }
-
+*/
     @Test
     void testConvert() {
         // arrange input

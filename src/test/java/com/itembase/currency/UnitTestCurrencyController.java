@@ -66,7 +66,7 @@ public class UnitTestCurrencyController {
         {
             convertedAmount = TestUtils.random().nextDouble(0, 101);
         }
-
+        convertedAmount = TestUtils.currencyRound(convertedAmount);
         ConversionRequest conversionRequest = new ConversionRequest();
         conversionRequest.setFrom(from);
         conversionRequest.setTo(to);
@@ -109,7 +109,7 @@ public class UnitTestCurrencyController {
         String from="";
         String to="";
         double originalAmount=0;
-        String errorCode = "UnhandledException";
+        String errorCode = "BadInput";
         String errorMessage = "from is empty";
 
         var conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
@@ -329,8 +329,15 @@ public class UnitTestCurrencyController {
                 .jsonPath("$.to").doesNotExist()
                 .jsonPath("$.amount").doesNotExist()
                 .jsonPath("$.converted").doesNotExist()
-                .jsonPath("$.errorCode").isEqualTo(errorCode)
-                .jsonPath("$.message").isEqualTo(errorMessage);
+                .jsonPath("$.errorCode").isEqualTo(errorCode);
+//                .jsonPath("$.message").isEqualTo(errorMessage);
+
+        theResponse.expectBody(ErrorResponse.class).consumeWith(
+                response->{
+                    var err = response.getResponseBody();
+                    assertEquals(errorCode, err.getErrorCode());
+                    assertTrue(err.getMessage().contains(errorMessage));
+                });
 
     }
 
@@ -352,7 +359,7 @@ public class UnitTestCurrencyController {
         String from = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
         String to = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
         double originalAmount = -40;
-        var errorCode="UnhandledException";
+        var errorCode="BadInput";
         var errorMessage  = "amount is less than zero";
         ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
 
