@@ -39,6 +39,7 @@ public class ExchangeClient {
                 .bodyToMono(ExchangeData.class)
                 .timeout(Duration.ofMillis(timeout))
                 .flatMap(payload->{
+                    System.out.println(payload.toString());
                     if(payload.error!=null) {
                         return Mono.error(new ApiException("ExchangeApiError",payload.error));
                     }

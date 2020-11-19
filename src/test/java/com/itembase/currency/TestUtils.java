@@ -14,7 +14,8 @@ public class TestUtils {
     private static MockWebServer exchangeApiServer1;
     private static MockWebServer exchangeApiServer2;
     private static Map<String, Double> rates = new HashMap<String, Double>();
-    private static String[] currencies;
+    private static String[] currenciesArr;
+    private static List<String> currenciesList;
 
     static {
         rates.put("EUR", randomRate());
@@ -69,12 +70,25 @@ public class TestUtils {
         rates.put("UAH", randomRate());
         rates.put("UYU", randomRate());
         rates.put("ZAR", randomRate());
-        currencies = new String[rates.size()];
-        rates.keySet().toArray(currencies);
+        currenciesArr = new String[rates.size()];
+        rates.keySet().toArray(currenciesArr);
+        currenciesList = Arrays.asList(currenciesArr);
     }
 
     public static String[] getCurrencies() {
-        return currencies;
+        return currenciesArr;
+    }
+
+    public static String getRandomCurrency() {
+        return currenciesList.get(random().nextInt(currenciesList.size()));
+    }
+
+    public static double getRandomAmount(){
+        return currencyRound(random().nextDouble(0, 1_000_000_001));
+    }
+
+    public static double getRandomRate(){
+        return random().nextDouble(0, 101);
     }
 
     public static Map<String, Double> getRates() {
@@ -258,8 +272,9 @@ public class TestUtils {
         return rates;
     }
 
-    public static void setConfig(DynamicPropertyRegistry r, Boolean useShuffle) {
+    public static void setConfig(DynamicPropertyRegistry r, Boolean useShuffle, int cacheDuration) {
         //r.add("exchange.requestTimeout", () -> "1000");
+        r.add("exchange.cacheDuration", ()->cacheDuration);
         r.add("exchange.useShuffle", () -> useShuffle.toString());
         r.add("exchange.baseUrls[0]", () -> String.format("http://localhost:%s",8181));
         //exchangeApiServer1.getPort()));

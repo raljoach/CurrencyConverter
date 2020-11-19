@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /* Functional Tests of /currency/convert api of CurrencyController
    using real Exchange API Web Servers implementation
  */
@@ -105,6 +107,7 @@ public class End2EndTestCurrencyController {
         TestUtils.setShuffle(r, false);
     }
 */
+
     @Test
     void testConvert() {
         // arrange input

@@ -332,7 +332,8 @@ public class UnitTestCurrencyController {
                 .jsonPath("$.errorCode").isEqualTo(errorCode);
 //                .jsonPath("$.message").isEqualTo(errorMessage);
 
-        theResponse.expectBody(ErrorResponse.class).consumeWith(
+        theResponse.expectBody(ErrorResponse.class)
+                .consumeWith(
                 response->{
                     var err = response.getResponseBody();
                     assertEquals(errorCode, err.getErrorCode());

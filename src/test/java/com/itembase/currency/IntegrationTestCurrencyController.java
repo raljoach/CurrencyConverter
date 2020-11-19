@@ -58,7 +58,7 @@ public class IntegrationTestCurrencyController {
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry r) throws IOException {
-        TestUtils.setConfig(r, true);
+        TestUtils.setConfig(r, true, 0);
     }
 
     @Test

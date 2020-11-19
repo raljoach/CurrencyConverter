@@ -1,10 +1,7 @@
 package com.itembase.currency;
 
-import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -15,6 +12,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,7 +38,7 @@ public class IntegrationTestCurrencyService {
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry r) throws IOException {
-        TestUtils.setConfig(r, useShuffle);
+        TestUtils.setConfig(r, useShuffle, 0);
     }
 
     /* UT: CurrencyService.getRate

@@ -1,6 +1,7 @@
 package com.itembase.currency;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -12,6 +13,8 @@ import java.util.concurrent.TimeoutException;
 // TODO: https://developer.okta.com/blog/2018/09/24/reactive-apis-with-spring-webflux
 // @Log4j2
 @Service
+//@Cacheable(cacheNames="currency")
+//@CacheConfig(cacheNames = "employee-cache")
 public class CurrencyService {
     private final ApiConfig apiConfig;
 
@@ -48,19 +51,15 @@ public class CurrencyService {
          getRate()
          return rate * amount
      */
-    public Mono<Double> convert(String from, String to, Double amount) {
+    public synchronized Mono<Double> convert(String from, String to, Double amount) {
         apiConfig.shuffle();
-        Mono<Double> rateMono = getRate(from, to);
+        Mono<Double> rateMono = getCachedRateMono(from, to);
         return rateMono.map(rate -> round(rate * amount, 2));
-    }
 
-    private static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = new BigDecimal(Double.toString(value));
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
+        //var rate = getRateValue(from, to);
+        //return Mono.just(round(rate * amount, 2));
     }
+    
 
     // TODO: https://stackoverflow.com/questions/62329617/webflux-webclient-re-try-with-different-url
     // TODO: https://www.baeldung.com/spring-webclient-simultaneous-calls
@@ -138,7 +137,45 @@ public class CurrencyService {
                             .onError(throw ApiUnavailableException()))
 
      */
-    private Mono<Double> getRate(String from, String to) {
+
+    //@Cacheable(value="rates", key="#p0.concat(#p1)", sync=true)
+    @Cacheable(
+            cacheNames = "rates",
+            sync=true//,
+            //key="#from.concat(#to)"
+    )
+    public synchronized Double getRateValue(String from, String to) {
+        return getRateMono(from, to).block();
+    }
+
+    //@Cacheable("rateMono")
+/*
+    String key = "myId";
+    LoadingCache<String, Object> graphs = Caffeine
+            .newBuilder()
+            .maximumSize(10_000)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .refreshAfterWrite(1, TimeUnit.MINUTES)
+            .build(key -> createExpensiveGraph(key));
+
+    Mono<Double> cachedRate = CacheMono
+            .lookup(graphs.asMap(), key)
+            .onCacheMissResume(repository.findOneById(key));
+*/
+
+    @Cacheable(
+            cacheNames = "ratesMono2",
+            //key="#from.concat(#to)",
+            sync = true)
+    public synchronized Mono<Double> getCachedRateMono(String from, String to) {
+        return getRateMono(from,to).cache(apiConfig.getCacheDuration());
+    }
+
+    @Cacheable(
+            cacheNames = "ratesMono",
+            //key="#from.concat(#to)",
+            sync = true)
+    public synchronized Mono<Double> getRateMono(String from, String to) {
         //try {
 
             return makeRequestForRate(0, from, to)
@@ -161,7 +198,7 @@ public class CurrencyService {
                                                 })*/
                                         .flatMap(rate2 -> {
                                                     System.out.println("Using rate2: " + rate2);
-                                                    return Mono.just(rate2);
+                                                    return Mono.just(rate2).cache(apiConfig.getCacheDuration());
                                                 }
                                         );
                             }
@@ -172,7 +209,7 @@ public class CurrencyService {
                     )
                     .flatMap(rate1 -> {
                         System.out.println("Using rate1: " + rate1);
-                        return Mono.just(rate1);
+                        return Mono.just(rate1).cache(apiConfig.getCacheDuration());
                     });
         /*}
         catch(Exception ex)
@@ -193,12 +230,25 @@ public class CurrencyService {
              .contentType("application/json")
              .subscribe();
      */
-    private Mono<Double> makeRequestForRate(int i, String from, String to){
+
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+    /*@Cacheable(
+            cacheNames = "ratesRequest",
+            //key="#from.concat(#to)",
+            sync = true)*/
+    public synchronized Mono<Double> makeRequestForRate(int i, String from, String to){
 
         String apiClientUrl = apiConfig.getBaseUrls().get(i);
         String rateUrl = rateUrl(apiConfig.getRateUrls().get(i), from, to);
 
-        return new ExchangeClient(apiClientUrl, apiConfig.getRequestTimeout()).getRate(rateUrl, to)
+        return new ExchangeClient(apiClientUrl, apiConfig.getRequestTimeout()).getRate(rateUrl, to).cache(apiConfig.getCacheDuration())
                 .onErrorResume(e->{
                     if(e instanceof WebClientResponseException)
                     {
