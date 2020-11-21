@@ -9,11 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-// TODO: Integration test cases for ApiConfig
-// TODO: https://www.baeldung.com/spring-cache-tutorial
-// TODO: https://www.baeldung.com/java-caching-caffeine
-// TODO: https://stackoverflow.com/questions/48769886/how-to-have-multiple-cache-manager-configuration-in-multiple-modules-projects-sp
-// TODO: https://www.baeldung.com/spring-multiple-cache-managers
 @Configuration
 @EnableCaching
 @ConfigurationProperties("exchange")

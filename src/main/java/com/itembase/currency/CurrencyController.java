@@ -44,6 +44,12 @@ public class CurrencyController {
     @Autowired
     private CurrencyService currencyService;
 
+    @PostMapping("/status")
+    public ResponseEntity<String> status() {
+        return ResponseEntity.ok("Server up");
+    }
+
+
     //TODO: https://www.baeldung.com/spring-security-cache-control-headers
     //TODO: https://www.springboottutorial.com/spring-boot-versioning-for-rest-services
     //.cacheControl(CacheControl.maxAge(60, TimeUnit.SECONDS))
