@@ -1,6 +1,7 @@
 package com.itembase.currency;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -15,6 +16,10 @@ import java.util.concurrent.TimeoutException;
 @Service
 //@Cacheable(cacheNames="currency")
 //@CacheConfig(cacheNames = "employee-cache")
+@CacheConfig(cacheNames={"rate"}
+//, keyGenerator = "customKeyGenerator"
+)
+//@CacheConfig(cacheNames={"currency"})
 public class CurrencyService {
     private final ApiConfig apiConfig;
 
@@ -51,7 +56,7 @@ public class CurrencyService {
          getRate()
          return rate * amount
      */
-    public synchronized Mono<Double> convert(String from, String to, Double amount) {
+    public Mono<Double> convert(String from, String to, Double amount) {
         apiConfig.shuffle();
         Mono<Double> rateMono = getCachedRateMono(from, to);
         return rateMono.map(rate -> round(rate * amount, 2));
@@ -139,12 +144,12 @@ public class CurrencyService {
      */
 
     //@Cacheable(value="rates", key="#p0.concat(#p1)", sync=true)
-    @Cacheable(
-            cacheNames = "rates",
-            sync=true//,
+   // @Cacheable(
+   //         cacheNames = "rates",
+   //         sync=true//,
             //key="#from.concat(#to)"
-    )
-    public synchronized Double getRateValue(String from, String to) {
+   // )
+    public Double getRateValue(String from, String to) {
         return getRateMono(from, to).block();
     }
 
@@ -163,19 +168,31 @@ public class CurrencyService {
             .onCacheMissResume(repository.findOneById(key));
 */
 
-    @Cacheable(
-            cacheNames = "ratesMono2",
+    //@Cacheable(
+    //        cacheNames = "ratesMono2",
             //key="#from.concat(#to)",
-            sync = true)
-    public synchronized Mono<Double> getCachedRateMono(String from, String to) {
+    //        sync = true)
+    public Mono<Double> getCachedRateMono(String from, String to) {
         return getRateMono(from,to).cache(apiConfig.getCacheDuration());
     }
-
+/*
     @Cacheable(
-            cacheNames = "ratesMono",
+            cacheNames={"rates","ratesMono","ratesMono2","ratesRequest"}
             //key="#from.concat(#to)",
-            sync = true)
-    public synchronized Mono<Double> getRateMono(String from, String to) {
+            //sync = true
+    )
+
+ */
+    //@Cacheable
+    /*
+    @Cacheable
+            (value = "rate",
+            //key="{ #root.methodName, #from, #to }",
+            keyGenerator = "customKeyGenerator",
+            sync = true)*/
+    @Cacheable
+            //(key="#from")
+    public Mono<Double> getRateMono(String from, String to) {
         //try {
 
             return makeRequestForRate(0, from, to)
@@ -243,7 +260,7 @@ public class CurrencyService {
             cacheNames = "ratesRequest",
             //key="#from.concat(#to)",
             sync = true)*/
-    public synchronized Mono<Double> makeRequestForRate(int i, String from, String to){
+    public Mono<Double> makeRequestForRate(int i, String from, String to){
 
         String apiClientUrl = apiConfig.getBaseUrls().get(i);
         String rateUrl = rateUrl(apiConfig.getRateUrls().get(i), from, to);

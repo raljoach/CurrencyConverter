@@ -28,6 +28,7 @@ import org.springframework.cache.annotation.EnableCaching;
 // TODO: https://www.dineshonjava.com/spring-cache-tutorial/
 
 @SpringBootApplication
+@EnableCaching
 @EnableConfigurationProperties({ApiConfig.class/*, CacheConfig.class*/})
 public class MainApplication {
     public static void main(String[] args) {
