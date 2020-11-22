@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.assertj.core.api.BDDAssumptions.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /* Functional Tests of /currency/convert api of CurrencyController
@@ -207,4 +208,15 @@ public class End2EndTestCurrencyController {
                         .expectStatus().isBadRequest()
                         .expectHeader().contentType(MediaType.APPLICATION_JSON_VALUE);
     }
+    
+    @Test
+    void testConvert_CacheControl() {
+        given(webTestClient)
+                .when()
+                .get(getBaseUrl() + "/default/users/Michael")
+                .then()
+                .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate")
+                .header("Pragma", "no-cache");
+    }
+
 }

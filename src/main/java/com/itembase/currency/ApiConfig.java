@@ -15,13 +15,17 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ApiConfig {
     private boolean useShuffle;
     private int requestTimeout=10_000;
+    private int browserCacheTimeout =0;
     private Duration cacheDuration;
     private List<String> baseUrls = new ArrayList<String>();
     private List<String> rateUrls = new ArrayList<String>();
 
     public boolean getUseShuffle() {
-
         return useShuffle;
+    }
+
+    public int getBrowserCacheTimeout() {
+        return browserCacheTimeout;
     }
 
     public long getRequestTimeout() {
@@ -52,6 +56,11 @@ public class ApiConfig {
     public void setRateUrls(List<String> rateUrls){
         this.rateUrls = rateUrls;
     }
+
+    public void setBrowserCacheTimeout(int browserCacheTimeout) {
+        this.browserCacheTimeout = browserCacheTimeout;
+    }
+
 
     public void shuffle() {
         if(this.useShuffle) {

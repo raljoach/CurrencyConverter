@@ -3,11 +3,14 @@ package com.itembase.currency;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -39,6 +42,9 @@ import static org.springframework.http.ResponseEntity.ok;
 public class CurrencyController {
 
     @Autowired
+    private ApiConfig apiConfig;
+
+    @Autowired
     private CurrencyService currencyService;
 
     @GetMapping("/status")
@@ -65,8 +71,6 @@ public class CurrencyController {
      */
     @PostMapping("/convert")
     public Mono<ResponseEntity<HttpResponse>> convert(@RequestBody ConversionRequest conversionRequest) {
-        //try {
-
             var inputRequestMono =
                     Mono.just(conversionRequest);
 
@@ -92,48 +96,15 @@ public class CurrencyController {
                         HttpResponse httpResponse = conversionResponse;
                         conversionResponse.setConverted(convertValue);
                         conversionResponse.validate();
-                        var responseEntity = ok(httpResponse);
+                        var responseEntity =
+                                ok().cacheControl(CacheControl.maxAge(
+                                        apiConfig.getBrowserCacheTimeout(),
+                                        TimeUnit.SECONDS)).body(httpResponse);
                         return Mono.just(responseEntity);
                     })
                     .onErrorResume(e->{
                         return handleError(e);
-                    })
-                    ;//.block());
-                    //.subscribe();
-                    //.defaultIfEmpty(ResponseEntity.notFound().build());
-            //return res;
-            //return res;
-                    //.defaultIfEmpty(ResponseEntity.notFound().build());;
-
-            //.subscribe();
-
-
-
-/*            return serviceResponse
-                    .flatMap(i -> Mono.just(i)
-                            .doOnNext(x->conversionResponse.setConverted(x))
-                            .then(Mono.just(ResponseEntity.ok(conversionResponse)))
-                    )
-
-                    .doOnSubscribe(x->Mono.just(ResponseEntity.ok(conversionResponse)));
-
- */
-/*
-            return serviceResponse
-                    //.log()
-                    //.flatMap(x->  conversionResponse.setConverted(x);  )
-                    .doOnNext(x->conversionResponse.setConverted(x))
-                    //.thenReturn(ResponseEntity.ok(conversionResponse))
-                    .dematerialize();
-                    //.doOnSubscribe(ok(conversionResponse));
-//                    .doOnSubscribe();
-                    //.subscribe(x -> conversionResponse.setConverted(x));
-            //return Mono.just(ResponseEntity.ok(conversionResponse));
-        }
-        catch(Throwable ex)
-        {
-            return handleError(ex);
-        }*/
+                    });
     }
 
     //TODO: @GetMapping /status
