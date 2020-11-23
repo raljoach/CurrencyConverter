@@ -25,6 +25,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 
 /* Functional Tests of /currency/convert api of CurrencyController
    using mock Exchange API Web Servers implementation
@@ -32,10 +33,13 @@ import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(controllers = CurrencyController.class)
-@Import(CurrencyService.class)
+@Import({CurrencyService.class/*, SecurityConfig.class*/})
 @EnableConfigurationProperties(value = ApiConfig.class)
 //@AutoConfigureWebTestClient(timeout = "36000")
 public class IntegrationTestCurrencyController {
+
+    @MockBean
+    SecurityConfig mockSecurityConfig;
 
     @MockBean
     ExchangeClient mockExchangeClient;
@@ -91,7 +95,7 @@ public class IntegrationTestCurrencyController {
 
         // act, assert
         var theResponse =
-                webTestClient.post()
+                webTestClient/*.mutateWith(csrf())*/.post()
                         .uri("/currency/convert")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)

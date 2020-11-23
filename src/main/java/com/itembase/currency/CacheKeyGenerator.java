@@ -9,22 +9,6 @@ import java.util.List;
 public class CacheKeyGenerator
         implements org.springframework.cache.interceptor.KeyGenerator {
 
-    /*
-    @Override
-    public Object generate(final Object target, final Method method,
-                           final Object... params) {
-
-        final List<Object> key = new ArrayList<>();
-        key.add(method.getDeclaringClass().getName());
-        key.add(method.getName());
-
-        for (final Object o : params) {
-            key.add(o);
-        }
-        return key;
-    }
-
-     */
     @Override
     public Object generate(Object target, Method method, Object... params) {
         StringBuilder sb = new StringBuilder();

@@ -7,8 +7,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
-// TODO:
-//@Cacheable
 public class ExchangeClient {
     private String exchangeUrl;
     private long timeout;
@@ -18,16 +16,6 @@ public class ExchangeClient {
         this.timeout = timeout;
     }
 
-
-
-    /* Pseudocode:
-          create(url)
-          .requestTime(this.timeout)
-          .bodyToMono(ExchangeData)
-          .flatMap( payload->{
-               return findRate(payload, to);
-          })
-     */
     public Mono<Double> getRate(String rateUrl, String to) {
         return WebClient
                 .create(exchangeUrl)
@@ -46,5 +34,4 @@ public class ExchangeClient {
                     return Mono.just(payload.findRate(to));
                 });
     }
-
 }
