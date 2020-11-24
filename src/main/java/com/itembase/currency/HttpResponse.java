@@ -1,5 +1,8 @@
 package com.itembase.currency;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class HttpResponse {
     private String message;
 
