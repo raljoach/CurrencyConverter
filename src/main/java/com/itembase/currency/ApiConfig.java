@@ -9,11 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-// TODO: Integration test cases for ApiConfig
-// TODO: https://www.baeldung.com/spring-cache-tutorial
-// TODO: https://www.baeldung.com/java-caching-caffeine
-// TODO: https://stackoverflow.com/questions/48769886/how-to-have-multiple-cache-manager-configuration-in-multiple-modules-projects-sp
-// TODO: https://www.baeldung.com/spring-multiple-cache-managers
 @Configuration
 @EnableCaching
 @ConfigurationProperties("exchange")
@@ -82,73 +77,4 @@ public class ApiConfig {
     public Duration getCacheDuration() {
         return this.cacheDuration;
     }
-
-    /*
-    @Bean
-    public Caffeine caffeineConfig() {
-        return Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES);
-    }
-
-    @Bean
-    @Primary
-    public CacheManager cacheManager2() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("rates", "ratesMono","ratesRequest");
-        cacheManager.setCaffeine(Caffeine.newBuilder()
-                .initialCapacity(200)
-                .maximumSize(500)
-                .weakKeys()
-                .recordStats());
-        return cacheManager;
-    }
-*/
-/*
-    // WORKS
-    @Bean
-    public CacheManager cacheManager() {
-        //return new ConcurrentMapCacheManager("rates");
-        var mgr = new ConcurrentMapCacheManager();
-        mgr.setCacheNames(Arrays.asList("rates","ratesMono","ratesMono2","ratesRequest"));
-        return mgr;
-    }
-    */
-
-/*
-
-
-    @Bean
-    public CacheManager cacheManager() {
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager(
-                "rates","ratesMono","ratesMono2","ratesRequest");
-        caffeineCacheManager.setCaffeine(caffeineCacheBuilder());
-        return caffeineCacheManager;
-    }
-
-
-    public Caffeine<Object, Object> caffeineCacheBuilder() {
-        return Caffeine.newBuilder()
-                .initialCapacity(100)
-                .maximumSize(500)
-                .expireAfterAccess(5, TimeUnit.SECONDS)
-                .weakKeys()
-                .recordStats();
-    }
-*/
-/*
-    @Bean
-    public CacheManager cacheManager() {
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager("currency");
-        caffeineCacheManager.setCaffeine(caffeineCacheBuilder());
-        return caffeineCacheManager;
-    }
-
-    @Bean
-    public Caffeine<Object, Object> caffeineCacheBuilder() {
-        return Caffeine.newBuilder()
-                .initialCapacity(100)
-                .maximumSize(500)
-                //.expireAfterAccess(5, TimeUnit.MILLISECONDS)
-                .weakKeys()
-                .recordStats();
-    }
-*/
 }

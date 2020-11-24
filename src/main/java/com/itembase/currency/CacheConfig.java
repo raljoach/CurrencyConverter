@@ -30,21 +30,6 @@ public class CacheConfig extends CachingConfigurerSupport
                 .initialCapacity(100)
                 .maximumSize(150)
                 .expireAfterAccess(5, TimeUnit.SECONDS)
-                //.weakKeys()
-                .removalListener(new CustomRemovalListener())
                 .recordStats();
-    }
-/*
-    @Bean("customKeyGenerator")
-    public KeyGenerator keyGenerator() {
-        return new CacheKeyGenerator();
-    }
-*/
-    class CustomRemovalListener implements RemovalListener<Object, Object> {
-        @Override
-        public void onRemoval(Object key, Object value, RemovalCause cause) {
-            System.out.format("removal listener called with key [%s], cause [%s], evicted [%S]\n",
-                    key, cause.toString(), cause.wasEvicted());
-        }
     }
 }
