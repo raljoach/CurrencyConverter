@@ -34,7 +34,6 @@ import static org.mockito.ArgumentMatchers.any;
 @WebFluxTest(controllers = CurrencyController.class)
 @Import(CurrencyService.class)
 @EnableConfigurationProperties(value = ApiConfig.class)
-//@AutoConfigureWebTestClient(timeout = "36000")
 public class IntegrationTestCurrencyController {
 
     @MockBean

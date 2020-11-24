@@ -1,8 +1,10 @@
 package com.itembase.currency;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConversionResponse extends HttpResponse {
 
     private final ConversionData data = new ConversionData();

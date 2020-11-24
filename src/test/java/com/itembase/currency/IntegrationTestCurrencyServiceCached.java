@@ -22,8 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(CurrencyService.class)
 @EnableConfigurationProperties(value = ApiConfig.class)
-@Import({CacheConfig.class, CacheKeyGenerator.class})
-//@EnableCaching
+@Import({CacheConfig.class})
 public class IntegrationTestCurrencyServiceCached {
     @Autowired
     CurrencyService currencyService;
@@ -43,120 +42,6 @@ public class IntegrationTestCurrencyServiceCached {
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry r) throws IOException {
         TestUtils.setConfig(r, useShuffle, 50000);
-    }
-    @Test
-    void test_GetRateValue_Cache_Expired() throws InterruptedException {
-        // arrange input
-        String from = TestUtils.getRandomCurrency();
-        String to = TestUtils.getRandomCurrency();
-
-        Double rate1 = TestUtils.getRandomRate();
-        Double rate2 = TestUtils.getRandomRate();
-
-        // arrange mocks
-        TestUtils.addExchangeApiServer1Response(from, to, rate1);
-        TestUtils.addExchangeApiServer1Response(from, to, rate2);
-
-        // act
-        var rateAmt1/*Mono*/ = currencyService.getRateValue(from, to);
-        var rateAmt2/*Mono*/ = currencyService.getRateValue(from, to);
-
-        // assert
-        /*
-        StepVerifier
-                .create(rateAmt1Mono)
-                .consumeNextWith(
-                            x->{
-                                assertEquals(rate1, x.doubleValue());
-                            }
-                    )
-                .verifyComplete();
-
-
-        StepVerifier
-                .create(rateAmt2Mono)
-                .consumeNextWith(
-                        x->{
-                            assertEquals(rate1, x.doubleValue());
-                        }
-                )
-                .verifyComplete();
-*/
-        assertEquals(rate1, rateAmt1);
-        assertEquals(rate1, rateAmt2);
-        Thread.sleep(5000);
-
-        // act
-        var rate3/*Mono*/ = currencyService.getRateValue(from, to);
-        var rate4/*Mono*/ = currencyService.getRateValue(from, to);
-
-        // assert
-        /*
-        StepVerifier
-                .create(rate3Mono)
-                .consumeNextWith(
-                        x->{
-                            assertEquals(rate2, x.doubleValue());
-                        }
-                )
-                .verifyComplete();
-
-
-        StepVerifier
-                .create(rate4Mono)
-                .consumeNextWith(
-                        x->{
-                            assertEquals(rate2, x.doubleValue());
-                        }
-                )
-                .verifyComplete();
-
-         */
-
-        assertEquals(rate2, rate3);
-        assertEquals(rate2, rate4);
-    }
-
-    @Test
-    void test_GetRateValue_Using_Cache() throws InterruptedException {
-        // arrange input
-        String from = TestUtils.getRandomCurrency();
-        String to = TestUtils.getRandomCurrency();
-
-        Double rate1 = TestUtils.getRandomRate();
-        Double rate2 = TestUtils.getRandomRate();
-
-        // arrange mocks
-        TestUtils.addExchangeApiServer1Response(from, to, rate1);
-        TestUtils.addExchangeApiServer1Response(from, to, rate2);
-
-        // act
-        var rateAmt1/*Mono*/ = currencyService.getRateValue(from, to);
-        var rateAmt2/*Mono*/ = currencyService.getRateValue(from, to);
-
-        // assert
-        /*
-        StepVerifier
-                .create(rateAmt1Mono)
-                .consumeNextWith(
-                            x->{
-                                assertEquals(rate1, x.doubleValue());
-                            }
-                    )
-                .verifyComplete();
-
-
-        StepVerifier
-                .create(rateAmt2Mono)
-                .consumeNextWith(
-                        x->{
-                            assertEquals(rate1, x.doubleValue());
-                        }
-                )
-                .verifyComplete();
-*/
-        assertEquals(rate1, rateAmt1);
-        assertEquals(rate1, rateAmt2);
     }
 
     @Test
@@ -197,8 +82,6 @@ public class IntegrationTestCurrencyServiceCached {
                 )
                 .verifyComplete();
 
-        //assertEquals(rate1, rateAmt1);
-        //assertEquals(rate1, rateAmt2);
         Thread.sleep(5000);
 
         // act

@@ -24,15 +24,6 @@ import static org.mockito.Mockito.when;
    using mock CurrencyService implementation
  */
 
-/* MISSING CURRENCY SERVICE TEST CASES
-   Test 1: ZWL exists exchange api 1, but not exchange api 2
-   Test 2: ZWL exists exchange api 2, but not exchange api 1
-   Test 3: ZWL not in exchange api 1, not in exchange api 2
-   Test 4: exchange api 1 a-z ordered list, exchange api 2 random order list
-   Test 5: exchange api 2 a-z ordered list, exchange api 1 random order list
- */
-
-
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(controllers = CurrencyController.class)
 public class UnitTestCurrencyController {
@@ -330,7 +321,6 @@ public class UnitTestCurrencyController {
                 .jsonPath("$.amount").doesNotExist()
                 .jsonPath("$.converted").doesNotExist()
                 .jsonPath("$.errorCode").isEqualTo(errorCode);
-//                .jsonPath("$.message").isEqualTo(errorMessage);
 
         theResponse.expectBody(ErrorResponse.class)
                 .consumeWith(
