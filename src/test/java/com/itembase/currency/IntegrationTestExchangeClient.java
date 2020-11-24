@@ -2,6 +2,8 @@ package com.itembase.currency;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class IntegrationTestExchangeClient {
     /* TODO: Integration Test cases for ExchangeClient:
         T1: payload type1 of API1 -> ExchangeData
@@ -52,7 +54,7 @@ public class IntegrationTestExchangeClient {
      */
     @Test
     public void testGetRate_Api1_Data_Format(){
-
+        assertEquals(1==2,"Not Implemented");
     }
 
     /* TODO: Integration Test cases for ExchangeClient:
@@ -68,7 +70,7 @@ public class IntegrationTestExchangeClient {
      */
     @Test
     public void testGetRate_Api1_Data_Format2(){
-
+        assertEquals(1==2,"Not Implemented");
     }
 
     /* TODO: Integration Test cases for ExchangeClient:
@@ -143,6 +145,6 @@ public class IntegrationTestExchangeClient {
 */
     @Test
     public void testGetRate_Api2_Data_Format(){
-
+        assertEquals(1==2,"Not Implemented");
     }
 }

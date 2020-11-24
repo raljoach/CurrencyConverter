@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @WebFluxTest(CurrencyService.class)
 @EnableConfigurationProperties(value = ApiConfig.class)
 @Import({CacheConfig.class})
-//@EnableCaching
 public class IntegrationTestCurrencyServiceCached {
     @Autowired
     CurrencyService currencyService;
@@ -83,8 +82,6 @@ public class IntegrationTestCurrencyServiceCached {
                 )
                 .verifyComplete();
 
-        //assertEquals(rate1, rateAmt1);
-        //assertEquals(rate1, rateAmt2);
         Thread.sleep(5000);
 
         // act

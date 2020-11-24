@@ -201,15 +201,6 @@ public class TestUtils {
         return random().nextDouble(0, 101);
     }
 
-    /* Pseudocode:
-         var length = lowerCaseStr.size();
-         if(length==0) return lowerCaseStr;
-         var index = random().next(0,length);
-         char ch = lowerCaseStr.get(index);
-         char upperChar = ch.toUpperCase();
-
-         return lowerCaseStr.subString(0, index).concat(upperChar).concat(lowerCaseStr.subString(index+1);
-     */
     public static String randomUpperCase(String lowerCaseStr) {
         var length = lowerCaseStr.length();
         if(length==0) return lowerCaseStr;
@@ -224,10 +215,6 @@ public class TestUtils {
         return ThreadLocalRandom.current();
     }
 
-    /* Pseudocode:
-        result.append(result).append(": ").append(value);
-
-     */
     private static StringBuilder appendKeyValueToStr1(StringBuilder result, String key, String value) {
         return result.append("\"").append(key).append("\"").append(": ").append(value).append(",").append("\n");
     }
@@ -273,13 +260,10 @@ public class TestUtils {
     }
 
     public static void setConfig(DynamicPropertyRegistry r, Boolean useShuffle, int cacheDuration) {
-        //r.add("exchange.requestTimeout", () -> "1000");
         r.add("exchange.cacheDuration", ()->cacheDuration);
         r.add("exchange.useShuffle", () -> useShuffle.toString());
         r.add("exchange.baseUrls[0]", () -> String.format("http://localhost:%s",8181));
-        //exchangeApiServer1.getPort()));
         r.add("exchange.baseUrls[1]", () -> String.format("http://localhost:%s",7171));
-        //exchangeApiServer2.getPort()));
     }
 
     public static void setShuffle(DynamicPropertyRegistry r, Boolean useShuffle) {

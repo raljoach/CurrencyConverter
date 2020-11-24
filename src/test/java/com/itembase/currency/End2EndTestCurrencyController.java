@@ -35,15 +35,6 @@ public class End2EndTestCurrencyController {
     @Autowired
     WebTestClient webTestClient;
 
-    // TODO: End to End Currency controller test cases
-    /*
-        T1: API1 available
-        T2: API2 available
-        T3: bad input
-        T4: Bad API2 key
-     */
-
-
     private static List<String> currencyTypeList = new ArrayList<>();
 
     @BeforeAll
@@ -101,12 +92,6 @@ public class End2EndTestCurrencyController {
         currencyTypeList.add("UYU");
         currencyTypeList.add("ZAR");
     }
-/*
-    @DynamicPropertySource
-    static void properties(DynamicPropertyRegistry r) throws IOException {
-        TestUtils.setShuffle(r, false);
-    }
-*/
 
     @Test
     void testConvert() {

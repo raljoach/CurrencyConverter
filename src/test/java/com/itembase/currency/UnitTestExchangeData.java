@@ -9,14 +9,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UnitTestExchangeData {
-    /* Test cases:
-        [X] T1: valid to: "eur "," eUr ", " EUR"
-        [X] T2: invalid to: EURX
-        [X] T3: wrong to: @!-+
-        [X] T4: non-existent to: GGG
-        T5: rates empty
-        T6: rates null
-     */
 
     @Test
     public void testFindRate() {
@@ -79,6 +71,4 @@ public class UnitTestExchangeData {
             rates.put(to, expectedRate);
         }
     }
-
-
 }
