@@ -1,9 +1,17 @@
+/************************************************
+ *
+ * Author: Ralph Joachim
+ *
+ ************************************************/
 package com.itembase.currency;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
+/**
+ * Response body for /currency/convert requests
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConversionResponse extends HttpResponse {
 

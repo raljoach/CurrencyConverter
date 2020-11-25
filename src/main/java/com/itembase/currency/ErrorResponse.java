@@ -1,7 +1,15 @@
+/************************************************
+ *
+ * Author: Ralph Joachim
+ *
+ ************************************************/
 package com.itembase.currency;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+/**
+ * Response body for errors returned by REST controller
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse extends HttpResponse {
     private String errorCode;
