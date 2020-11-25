@@ -28,8 +28,9 @@ How to invoke API using Postman:
 Technologies Used:
 --------------------
 Java 11 <br>
-Spring Webflux/Project Reactor and SpringBoot 2+ <br>
+Spring Webflux and SpringBoot 2+ <br>
 Spring Reactive webclient <br>
+Project Reactor (Mono)
 
 Exchange API Dependencies:
 -----------------
