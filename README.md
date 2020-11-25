@@ -43,7 +43,7 @@ Problems faced:
 
 For future consideration:
 -------------------------
-* SSL
+* SSL/HTTPS endpoint for Currency Controller
 * OAuth/JWT - Authentication to Currency Controller could be implemented using JWT
 * Cache-control - browser side caching of calls to this API can be implemented in Currency Controller using cache-control header
 * Versioning - versioning of requests can be implemented via headers
