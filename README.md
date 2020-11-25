@@ -8,15 +8,17 @@ transforming an amount from one currency to another.
 Prerequisites:
 --------------
 Java 11 https://www.oracle.com/java/technologies/javase-jdk11-downloads.html
+Set JAVA_HOME environment variable to path of jdk folder (i.e. C:\Program Files\Java\jdk-11.0.9)
 
 Installation (Windows):
 -----------------------
 mvnw.cmd install
+cd target
+java -jar .\CurrencyConversion-0.0.1-SNAPSHOT.jar
 
+How to invoke API using Postman:
+---------------------------------
 
-Demo:
------
-TBD
 
 Technologies Used:
 --------------------
@@ -26,8 +28,13 @@ Spring Reactive webclient
 
 Special Gotchas:
 ----------------
-Problems you faced:
+Problems faced:
 * SSL was easy to setup but couldn't get integration tests to successful send calls to REST endpoint without getting SSL errors
+
+Demo:
+-----
+Coming soon
+
 
 Questions?
 -----------
