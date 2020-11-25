@@ -5,6 +5,10 @@ Description:
 CurrencyConverter is a reactive REST application that hosts a conversion API for 
 transforming an amount from one currency to another.
 
+Features:
+----------
+* Caching - internal caching of external API calls has been implemented
+
 Prerequisites:
 --------------
 [Java 11 Installation](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) <br>
