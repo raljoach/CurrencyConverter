@@ -5,11 +5,14 @@ Description:
 CurrencyConverter is a reactive REST application that hosts a conversion API for 
 transforming an amount from one currency to another.
 
-Installation:
+Prerequisites:
 --------------
+Java 11 https://www.oracle.com/java/technologies/javase-jdk11-downloads.html
 
+Installation (Windows):
+-----------------------
+mvnw.cmd install
 
-Setup, How to contribute.
 
 Demo:
 -----
@@ -26,5 +29,7 @@ Special Gotchas:
 Problems you faced:
 * SSL was easy to setup but couldn't get integration tests to successful send calls to REST endpoint without getting SSL errors
 
-
+Questions?
+-----------
+Email: raljoach@gmail.com
 
