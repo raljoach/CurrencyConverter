@@ -43,7 +43,11 @@ For future consideration:
 * Cache-control - browser side caching of calls to this API can be implemented in Currency Controller using cache-control header
 * Versioning - versioning of requests can be implemented via headers
 * Retry/Back pressure - implement retry and back off logic for external exchange API calls
+* Rate limiting on Currency Controller API usage
+* API keys for Currency Controller to track whose using this API
 * Support for external exchange API authentication (if required) - can be implemented using
+* An option for making parallel calls to external exchange APIs, first one wins is returned
+* An option to return the latest conversion rate of all external Exchange APIs, instead of just returning the first successful exchange API response
 
 Demo:
 -----
