@@ -7,7 +7,7 @@ transforming an amount from one currency to another.
 
 Features:
 ----------
-* Caching - internal caching of external API calls has been implemented
+* Caching - internal caching of external Exchange API calls has been implemented
 
 Prerequisites:
 --------------
