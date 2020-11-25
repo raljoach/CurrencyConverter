@@ -16,8 +16,8 @@ Set JAVA_HOME environment variable to path of jdk folder (i.e. C:\Program Files\
 
 Installation (Windows):
 -----------------------
-mvnw.cmd install
-cd target
+mvnw.cmd install <br>
+cd target <br>
 java -jar .\CurrencyConversion-0.0.1-SNAPSHOT.jar
 
 How to invoke API using Postman:
@@ -27,9 +27,9 @@ How to invoke API using Postman:
 
 Technologies Used:
 --------------------
-Java 11
-Spring Webflux/Project Reactor and SpringBoot 2+
-Spring Reactive webclient
+Java 11 <br>
+Spring Webflux/Project Reactor and SpringBoot 2+ <br>
+Spring Reactive webclient <br>
 
 Exchange API Dependencies:
 -----------------
