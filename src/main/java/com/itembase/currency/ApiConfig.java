@@ -62,6 +62,14 @@ public class ApiConfig {
         this.rateUrls = rateUrls;
     }
 
+    public void setCacheDuration(long timeMs) {
+        this.cacheDuration = Duration.ofMillis(timeMs);
+    }
+
+    public Duration getCacheDuration() {
+        return this.cacheDuration;
+    }
+
     public void shuffle() {
         if(this.useShuffle) {
             int n = baseUrls.size();
@@ -77,13 +85,5 @@ public class ApiConfig {
         String tmp = items.get(i);
         items.set(i,items.get(j));
         items.set(j,tmp);
-    }
-
-    public void setCacheDuration(long timeMs) {
-        this.cacheDuration = Duration.ofMillis(timeMs);
-    }
-
-    public Duration getCacheDuration() {
-        return this.cacheDuration;
     }
 }
