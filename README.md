@@ -27,10 +27,23 @@ Java 11
 Spring Webflux/Project Reactor and SpringBoot 2+
 Spring Reactive webclient
 
+Exchange API Dependencies:
+-----------------
+https://api.exchangeratesapi.io
+https://v6.exchangerate-api.com/
+
 Special Gotchas:
 ----------------
 Problems faced:
-* SSL was easy to setup but couldn't get integration tests to successful send calls to REST endpoint without getting SSL errors
+* SSL was easy to implement but not test, so SSL was omitted for now.
+
+For future consideration:
+-------------------------
+* OAuth/JWT - Authentication to Currency Controller could be implemented using JWT
+* Cache-control - browser side caching of calls to this API can be implemented in Currency Controller using cache-control header
+* Versioning - versioning of requests can be implemented via headers
+* Retry/Back pressure - implement retry and back off logic for external exchange API calls
+* Support for external exchange API authentication (if required) - can be implemented using
 
 Demo:
 -----
