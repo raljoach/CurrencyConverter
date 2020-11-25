@@ -18,7 +18,7 @@ java -jar .\CurrencyConversion-0.0.1-SNAPSHOT.jar
 
 How to invoke API using Postman:
 ---------------------------------
-![alt text](https://github.com/raljoach/CurrencyConverter/blob/master/Postman.jpg?raw=true)
+![alt text](https://github.com/raljoach/CurrencyConverter/blob/master/postman.JPG?raw=true)
 
 Technologies Used:
 --------------------
