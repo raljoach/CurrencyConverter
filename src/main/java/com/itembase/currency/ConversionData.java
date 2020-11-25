@@ -1,5 +1,15 @@
+/************************************************
+ *
+ * Author: Ralph Joachim
+ *
+ ************************************************/
 package com.itembase.currency;
 
+/**
+ * Data class used to store payload information on
+ * convert requests received by the Currency controller
+ * and also response payload returned by the controller
+ */
 public class ConversionData {
     private String from;
     private String to;

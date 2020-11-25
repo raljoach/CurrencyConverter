@@ -1,5 +1,14 @@
+/************************************************
+ *
+ * Author: Ralph Joachim
+ *
+ ************************************************/
 package com.itembase.currency;
 
+/**
+ * An exception class that indicates an error
+ * has occurred with this application
+ */
 public class ApiException extends RuntimeException {
     private String errorType;
 

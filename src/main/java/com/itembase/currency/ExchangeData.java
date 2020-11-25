@@ -1,13 +1,19 @@
+/************************************************
+ *
+ * Author: Ralph Joachim
+ *
+ ************************************************/
 package com.itembase.currency;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Stores data returned by external API calls for exchange information
+ */
 public class ExchangeData {
 
     @JsonProperty("base")

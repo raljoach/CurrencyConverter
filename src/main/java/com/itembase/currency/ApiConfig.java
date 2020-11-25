@@ -1,3 +1,8 @@
+/************************************************
+ *
+ * Author: Ralph Joachim
+ *
+ ************************************************/
 package com.itembase.currency;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -9,6 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Application configuration settings read from application.properties
+ * are read and set in the object properties below
+ * Note: Only properties that begin with exchange. are stored here
+ */
 @Configuration
 @EnableCaching
 @ConfigurationProperties("exchange")
@@ -20,7 +30,6 @@ public class ApiConfig {
     private List<String> rateUrls = new ArrayList<String>();
 
     public boolean getUseShuffle() {
-
         return useShuffle;
     }
 
@@ -29,7 +38,6 @@ public class ApiConfig {
     }
 
     public List<String> getBaseUrls() {
-
         return baseUrls;
     }
 
@@ -42,6 +50,7 @@ public class ApiConfig {
     }
 
     public void setRequestTimeout(int requestTimeout) {
+
         this.requestTimeout = requestTimeout;
     }
 

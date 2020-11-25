@@ -1,9 +1,11 @@
+/************************************************
+ *
+ * Author: Ralph Joachim
+ *
+ ************************************************/
 package com.itembase.currency;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,9 @@ import reactor.core.publisher.Mono;
 
 import static org.springframework.http.ResponseEntity.ok;
 
+/**
+ * REST controller for currency calls
+ */
 @RestController
 @RequestMapping("currency")
 @Validated
@@ -19,11 +24,21 @@ public class CurrencyController {
     @Autowired
     private CurrencyService currencyService;
 
+    /**
+     * Returns status indicating controller is available
+     */
     @GetMapping("/status")
     public ResponseEntity<String> status() {
         return ResponseEntity.ok("Server up");
     }
 
+    /**
+     * Converts currency amount
+     *
+     * @param conversionRequest payload for performing currency conversion
+     *
+     * @returns converted amount response
+     */
     @PostMapping("/convert")
     public Mono<ResponseEntity<HttpResponse>> convert(@RequestBody ConversionRequest conversionRequest) {
             var inputRequestMono =
@@ -59,6 +74,13 @@ public class CurrencyController {
                     });
     }
 
+    /**
+     * Exception Handler for controller
+     *
+     * @param ex Thrown exception to be handle
+     *
+     * @returns HTTP response to be returned to the REST controller client
+     */
     private Mono<ResponseEntity<HttpResponse>> handleError(Throwable ex)
     {
         String errorCode="UnhandledException";

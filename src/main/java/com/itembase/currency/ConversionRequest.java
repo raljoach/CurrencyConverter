@@ -1,8 +1,16 @@
+/************************************************
+ *
+ * Author: Ralph Joachim
+ *
+ ************************************************/
 package com.itembase.currency;
 
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
+/**
+ * Request body for /currency/convert requests
+ */
 public class ConversionRequest {
     private ConversionData data = new ConversionData();
 

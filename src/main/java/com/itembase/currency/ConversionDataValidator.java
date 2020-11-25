@@ -1,14 +1,18 @@
+/************************************************
+ *
+ * Author: Ralph Joachim
+ *
+ ************************************************/
 package com.itembase.currency;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+/**
+ * Performs validation on ConversionData fields
+ */
 public class ConversionDataValidator implements Validator {
-
-    /**
-     * This Validator validates *just* ConversionData instances
-     */
     public boolean supports(Class clazz) {
         return ConversionData.class.equals(clazz);
     }

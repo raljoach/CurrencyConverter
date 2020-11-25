@@ -1,5 +1,14 @@
+/************************************************
+ *
+ * Author: Ralph Joachim
+ *
+ ************************************************/
 package com.itembase.currency;
 
+/**
+ * An exception class that indicates an error
+ * has occurred during a currency conversion operation
+ */
 public class CurrencyException extends RuntimeException {
     private String errorCode;
 
