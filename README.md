@@ -7,7 +7,7 @@ transforming an amount from one currency to another.
 
 Prerequisites:
 --------------
-Java 11 https://www.oracle.com/java/technologies/javase-jdk11-downloads.html
+Java 11 https://www.oracle.com/java/technologies/javase-jdk11-downloads.html <br>
 Set JAVA_HOME environment variable to path of jdk folder (i.e. C:\Program Files\Java\jdk-11.0.9)
 
 Installation (Windows):
