@@ -29,7 +29,7 @@ Spring Reactive webclient
 
 Exchange API Dependencies:
 -----------------
-https://api.exchangeratesapi.io
+https://api.exchangeratesapi.io <br>
 https://v6.exchangerate-api.com/
 
 Special Gotchas:
