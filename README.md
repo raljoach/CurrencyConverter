@@ -22,6 +22,11 @@ java -jar .\CurrencyConversion-0.0.1-SNAPSHOT.jar
 
 REST API:
 -----------
+* from: the starting currency
+* to: the destination currency
+* amount: original amount to be converted
+* converted: the converted amount in the destination currency
+
 ### Request
 
 `POST /currency/convert`
