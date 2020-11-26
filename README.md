@@ -20,6 +20,27 @@ mvnw.cmd install <br>
 cd target <br>
 java -jar .\CurrencyConversion-0.0.1-SNAPSHOT.jar
 
+REST API:
+-----------
+### Request
+
+`POST /currency/convert`
+    
+    curl -i -H 'Accept: application/json' -X POST -d 'from=EUR&to=USD&amount=3.14' http://localhost:8080/currency/convert
+
+### Response
+
+    HTTP/1.1 200 OK
+    Date: Thu, 24 Feb 2011 12:36:32 GMT
+    Status: 200 OK
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 41
+
+    {"from":"EUR","to":"USD","amount":"3.14","converted":3.73}
+
+
+
 How to invoke API using Postman:
 ---------------------------------
 ![alt text](https://github.com/raljoach/CurrencyConverter/blob/master/contenttype.JPG?raw=true)
