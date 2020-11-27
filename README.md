@@ -35,6 +35,7 @@ java -jar .\CurrencyConversion-0.0.1-SNAPSHOT.jar
 
 Configuration
 --------------
+<pre>
 * logging.level.org.springframework.cache: tracing level for caching logic
 * exchange.useShuffle:      if TRUE, shuffle external API endpoints, else FALSE use endpoints in order specified down below
 * exchange.requestTimeout:  time in milliseconds of how long to wait for a external API request to timeout
@@ -45,7 +46,9 @@ Configuration
 * exchange.rateUrls[?]:     each element represents the rate url format for the baseUrl at the same index
 
 NOTE: <FROM> and <TO> are tokens that are replaced with the actual from and to fields of ConversionRequests at runtime.
-
+NOTE: <API KEY> is a token placeholder for your own API Key
+ </pre> 
+ 
 REST API:
 -----------
 * from: the starting currency
