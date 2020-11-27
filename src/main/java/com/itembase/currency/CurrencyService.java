@@ -99,9 +99,11 @@ public class CurrencyService {
      * @returns conversion rate
      */
     private Mono<Double> makeRequestForRate(int i, String from, String to){
-
-        String apiClientUrl = apiConfig.getBaseUrls().get(i);
-        String rateUrl = rateUrl(apiConfig.getRateUrls().get(i), from, to);
+        //String apiClientUrl = apiConfig.getBaseUrls().get(i);
+        //String rateUrl = rateUrl(apiConfig.getRateUrls().get(i), from, to);
+        ApiEndpoint endpoint = apiConfig.getEndpoint(i);
+        String apiClientUrl = endpoint.getBaseUrl();
+        String rateUrl = rateUrl(endpoint.getRateUrl(), from, to);
 
         return new ExchangeClient(apiClientUrl,
                 apiConfig.getRequestTimeout()).getRate(rateUrl, to)

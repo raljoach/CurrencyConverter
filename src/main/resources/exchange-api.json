@@ -1,0 +1,10 @@
+[
+  {
+    "baseUrl": "https://api.exchangeratesapi.io",
+    "rateUrl": "/latest?base=<FROM>"
+  },
+  {
+    "baseUrl": "https://v6.exchangerate-api.com/v6/68931214b500a7a0f882192f",
+    "rateUrl": "/latest/<FROM>"
+  }
+]

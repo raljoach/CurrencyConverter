@@ -5,10 +5,13 @@
  ************************************************/
 package com.itembase.currency;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,8 @@ public class ApiConfig {
     private boolean useShuffle;
     private int requestTimeout=10_000;
     private Duration cacheDuration;
+
+    private ApiEndpoint[] endpoints;
     private List<String> baseUrls = new ArrayList<String>();
     private List<String> rateUrls = new ArrayList<String>();
 
@@ -45,6 +50,12 @@ public class ApiConfig {
         return rateUrls;
     }
 
+
+    public ApiConfig() throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        endpoints = mapper.readValue(new File("src/main/resources/exchange-api.json"),ApiEndpoint[].class);
+    }
     public void setUseShuffle(boolean useShuffle) {
         this.useShuffle = useShuffle;
     }
@@ -75,16 +86,35 @@ public class ApiConfig {
      */
     public void shuffle() {
         if(this.useShuffle) {
+            int n = endpoints.length;
+            for (int current = 0; current < (n - 1); current++) {
+                int other = ThreadLocalRandom.current().nextInt(current + 1, n);
+                swap(endpoints, current, other);
+            }
+        }
+    }
+    public void shuffleOld() {
+        if(this.useShuffle) {
             int n = baseUrls.size();
             for (int current = 0; current < (n - 1); current++) {
                 int other = ThreadLocalRandom.current().nextInt(current + 1, n);
-                swap(baseUrls, current, other);
-                swap(rateUrls, current, other);
+                swapOld(baseUrls, current, other);
+                swapOld(rateUrls, current, other);
             }
         }
     }
 
-    private void swap(List<String> items, int i, int j) {
+    public ApiEndpoint getEndpoint(int i){
+        return endpoints[i];
+    }
+
+    private void swap(ApiEndpoint[] items, int i, int j) {
+        var tmp = items[i];
+        items[i] = items[j];
+        items[j] = tmp;
+    }
+
+    private void swapOld(List<String> items, int i, int j) {
         String tmp = items.get(i);
         items.set(i,items.get(j));
         items.set(j,tmp);
