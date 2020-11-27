@@ -9,6 +9,18 @@ Features:
 ----------
 * Caching - internal caching of external Exchange API calls has been implemented
 
+Testing:
+--------
+* End to end tests
+  * Currency Controller - test that the currency controller does the conversion and returns a value
+* Integration tests
+  * Currency Controller - test controller with a mock web server
+  * Currency Service - test service with a mock web server
+  * Currency Service Cached - test caching of external API calls
+* Unit tests
+  * Currency Controller - tests currency controller in isolation
+  * Exchange Data - tests exchange data in isolation
+
 Prerequisites:
 --------------
 [Java 11 Installation](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) <br>
