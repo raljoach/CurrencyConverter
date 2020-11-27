@@ -33,6 +33,19 @@ mvnw.cmd install <br>
 cd target <br>
 java -jar .\CurrencyConversion-0.0.1-SNAPSHOT.jar
 
+Configuration
+--------------
+* logging.level.org.springframework.cache: tracing level for caching logic
+* exchange.useShuffle:      if TRUE, shuffle external API endpoints, else FALSE use endpoints in order specified down below
+* exchange.requestTimeout:  time in milliseconds of how long to wait for a external API request to timeout
+* exchange.cacheDuration:   time in milliseconds to store rate in cache
+* exchange.apiRetry:        number of times to retry an external API call
+* exchange.apiBackoff:      number of seconds to wait before retrying an external API call
+* exchange.baseUrls[?]:     each element represents an external exchange API base url
+* exchange.rateUrls[?]:     each element represents the rate url format
+
+NOTE: <FROM> and <TO> are tokens that are replaced with the actual from and to fields of ConversionRequests at runtime.
+
 REST API:
 -----------
 * from: the starting currency
