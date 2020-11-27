@@ -42,7 +42,7 @@ REST API:
     Content-Type: application/json
     Content-Length: 41
 
-    {"from":"EUR","to":"USD","amount":"3.14","converted":3.73}
+    {"from":"EUR","to":"USD","amount":3.14,"converted":3.73}
 
 
 
