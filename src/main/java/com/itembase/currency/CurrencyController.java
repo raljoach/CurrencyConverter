@@ -89,10 +89,6 @@ public class CurrencyController {
         {
             errorCode="BadInput";
         }
-        else if(ex instanceof CurrencyException)
-        {
-            errorCode = ((CurrencyException) ex).getErrorCode();
-        }
         else if(ex instanceof ApiException)
         {
             errorCode = ((ApiException) ex).getErrorType();

@@ -210,7 +210,7 @@ public class UnitTestCurrencyController {
 
         // arrange mock
         when(mockCurrencyService.convert(from,to,originalAmount))
-                .thenThrow(new CurrencyException(errorCode,errorMessage));
+                .thenThrow(new ApiException(errorCode,errorMessage));
 
         // act
         var theResponse =
@@ -232,7 +232,6 @@ public class UnitTestCurrencyController {
                 .jsonPath("$.converted").doesNotExist()
                 .jsonPath("$.errorCode").isEqualTo(errorCode)
                 .jsonPath("$.message").isEqualTo(errorMessage);
-
     }
 
     @Test
@@ -326,6 +325,8 @@ public class UnitTestCurrencyController {
                 .consumeWith(
                 response->{
                     var err = response.getResponseBody();
+                    System.out.println("errorCode: "+ err.getErrorCode());
+                    System.out.println("errorMessage: " + err.getMessage());
                     assertEquals(errorCode, err.getErrorCode());
                     assertTrue(err.getMessage().contains(errorMessage));
                 });

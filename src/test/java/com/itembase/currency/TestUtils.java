@@ -120,7 +120,6 @@ public class TestUtils {
     public static void addExchangeApiServer1ErrorResponse(int status, String response) {
         exchangeApiServer1.enqueue(new MockResponse()
                 .setResponseCode(status)
-                //.setStatus("HTTP 1.1 "+status + " FOO")
                 .setBody(response)
                 .addHeader("Content-Type", "application/json")
                 );

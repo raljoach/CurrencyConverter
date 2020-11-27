@@ -21,6 +21,9 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class CacheConfig extends CachingConfigurerSupport
 {
+    /**
+     * Gets the Cache Manager implementation used by this application
+     */
     @Bean
     @Override
     public CacheManager cacheManager() {
@@ -31,7 +34,7 @@ public class CacheConfig extends CachingConfigurerSupport
     }
 
 
-    public Caffeine<Object, Object> caffeineCacheBuilder() {
+    private Caffeine<Object, Object> caffeineCacheBuilder() {
         return Caffeine.newBuilder()
                 .initialCapacity(100)
                 .maximumSize(150)

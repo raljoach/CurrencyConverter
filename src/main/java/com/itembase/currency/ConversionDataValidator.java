@@ -17,6 +17,13 @@ public class ConversionDataValidator implements Validator {
         return ConversionData.class.equals(clazz);
     }
 
+    /**
+     * This is a an application which hosts
+     * a reactive REST controller endpoint /currency/conversion
+     * which performs conversion of an amount between currencies
+     * @param obj the instance of ConversionData to run validation on
+     * @param e errors object that will contain all errors found during validation
+     */
     public void validate(Object obj, Errors e) {
         ConversionData p = (ConversionData) obj;
         validateAmount(e, p.getAmount());

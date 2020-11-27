@@ -38,15 +38,13 @@ public class ConversionRequest {
         data.setAmount(amount);
     }
 
+    /**
+     * Validates all fields of the request
+     */
     public String validate() {
         var validator = new ConversionDataValidator();
         Errors errors = new BeanPropertyBindingResult(data, "ConversionRequest");
         validator.validate(data, errors);
-        //if (errors.hasErrors()) {
-        //    throw new ApiException("BadInput",errors.toString());
-        //}
-        //return this;
-
         String res = null;
         if(errors.hasErrors()) {
             res = errors.toString();
