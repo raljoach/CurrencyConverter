@@ -28,6 +28,7 @@ Set JAVA_HOME environment variable to path of jdk folder (i.e. C:\Program Files\
 
 Installation (Windows):
 -----------------------
+In src/main/resources/application.properties, replace <API_KEY> with your own key for exchange API https://v6.exchangerate-api.com
 mvnw.cmd install <br>
 cd target <br>
 java -jar .\CurrencyConversion-0.0.1-SNAPSHOT.jar
