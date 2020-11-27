@@ -58,39 +58,11 @@ public class CurrencyService {
      * @returns conversion rate
      */
     @Cacheable
-    public Mono<Double> getRateMono(String from, String to) {
-        /**
-         * Assumes there are only 2 APIs available for getting conversion rates
-         * Try the first API and return the result if successful
-         * If the first API call is attempted and fails,
-         * try the second API call and return the result
-         * Otherwise return an error
-         */
-        return makeRequestForRate(0, from, to)
-                    .onErrorResume(e -> {
-                                return makeRequestForRate(1, from, to)
-                                        .flatMap(rate2 -> {
-                                                    return Mono.just(rate2).cache(apiConfig.getCacheDuration());
-                                                }
-                                        );
-                            }
-                    )
-                    .flatMap(rate1 -> {
-                        return Mono.just(rate1).cache(apiConfig.getCacheDuration());
-                    });
-    }
-
-    @Cacheable
-    public Mono<Double> getRateMono2(String from, String to){
+    public Mono<Double> getRateMono(String from, String to){
         if(apiConfig.getBaseUrls().size()<1) {
             throw new ApiException("ConfigurationError", "No external exchange API endpoints configured");
         }
-        /*
-        var first = tryRequestForRate(0, from, to);
-        for(int i=1; i<apiConfig.getBaseUrls().size(); i++){
-            tryRequestForRate()
-        }
-*/
+
         var currentRequest =
                 makeRequestForRate(0, from, to);
         if(apiConfig.getApiRetry()>0) {
@@ -124,7 +96,7 @@ public class CurrencyService {
     }
 
     private Mono<Double> getCachedRateMono(String from, String to) {
-        return getRateMono2(from,to).cache(apiConfig.getCacheDuration());
+        return getRateMono(from,to).cache(apiConfig.getCacheDuration());
     }
 
     private static double round(double value, int places) {
