@@ -42,7 +42,7 @@ Configuration
 * exchange.apiRetry:        number of times to retry an external API call
 * exchange.apiBackoff:      number of seconds to wait before retrying an external API call
 * exchange.baseUrls[?]:     each element represents an external exchange API base url
-* exchange.rateUrls[?]:     each element represents the rate url format
+* exchange.rateUrls[?]:     each element represents the rate url format for the baseUrl at the same index
 
 NOTE: <FROM> and <TO> are tokens that are replaced with the actual from and to fields of ConversionRequests at runtime.
 
