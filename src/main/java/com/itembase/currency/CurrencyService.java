@@ -10,10 +10,13 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -77,8 +80,51 @@ public class CurrencyService {
                     });
     }
 
+    @Cacheable
+    public Mono<Double> getRateMono2(String from, String to){
+        if(apiConfig.getBaseUrls().size()<1) {
+            throw new ApiException("ConfigurationError", "No external exchange API endpoints configured");
+        }
+        /*
+        var first = tryRequestForRate(0, from, to);
+        for(int i=1; i<apiConfig.getBaseUrls().size(); i++){
+            tryRequestForRate()
+        }
+*/
+        var currentRequest =
+                makeRequestForRate(0, from, to);
+        if(apiConfig.getApiRetry()>0) {
+            currentRequest = currentRequest.retryWhen(
+                    Retry.backoff(apiConfig.getApiRetry(), Duration.ofSeconds(apiConfig.getApiBackoff()))
+            );
+        }
+        for(int i=1; i<apiConfig.getBaseUrls().size(); i++) {
+            int finalI = i;
+            if(apiConfig.getApiRetry()>0) {
+                currentRequest = currentRequest.onErrorResume(
+                        t -> Exceptions.isRetryExhausted(t),
+                        t -> {
+                            var theNextRequest = makeRequestForRate(finalI, from, to);
+                            theNextRequest.retryWhen(
+                                    Retry.backoff(
+                                            apiConfig.getApiRetry(), Duration.ofSeconds(apiConfig.getApiBackoff()))
+                            );
+                            return theNextRequest;
+                        });
+            }
+            else {
+                currentRequest = currentRequest.onErrorResume(
+                        e->{
+                            return makeRequestForRate(finalI, from, to);
+                        }
+                );
+            }
+        }
+        return currentRequest;
+    }
+
     private Mono<Double> getCachedRateMono(String from, String to) {
-        return getRateMono(from,to).cache(apiConfig.getCacheDuration());
+        return getRateMono2(from,to).cache(apiConfig.getCacheDuration());
     }
 
     private static double round(double value, int places) {

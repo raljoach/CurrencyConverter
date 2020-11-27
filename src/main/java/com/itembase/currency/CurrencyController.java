@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
 import static org.springframework.http.ResponseEntity.ok;
 
 /**
@@ -92,6 +91,12 @@ public class CurrencyController {
         else if(ex instanceof ApiException)
         {
             errorCode = ((ApiException) ex).getErrorType();
+        }
+        else {
+            var cause = ex.getCause();
+            if(cause!=null){
+                return handleError(cause);
+            }
         }
 
         if(message == null || message.isBlank() || message.isEmpty())

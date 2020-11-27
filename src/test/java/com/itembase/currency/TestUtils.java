@@ -263,6 +263,8 @@ public class TestUtils {
         r.add("exchange.useShuffle", () -> useShuffle.toString());
         r.add("exchange.baseUrls[0]", () -> String.format("http://localhost:%s",8181));
         r.add("exchange.baseUrls[1]", () -> String.format("http://localhost:%s",7171));
+        r.add("exchange.apiRetry",()->0);
+        r.add("exchange.apiBackoff",()->0);
     }
 
     public static void setShuffle(DynamicPropertyRegistry r, Boolean useShuffle) {

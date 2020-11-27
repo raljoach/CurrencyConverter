@@ -26,6 +26,8 @@ public class ApiConfig {
     private boolean useShuffle;
     private int requestTimeout=10_000;
     private Duration cacheDuration;
+    private int apiRetry;
+    private int apiBackoff;
     private List<String> baseUrls = new ArrayList<String>();
     private List<String> rateUrls = new ArrayList<String>();
 
@@ -43,6 +45,18 @@ public class ApiConfig {
 
     public List<String> getRateUrls() {
         return rateUrls;
+    }
+
+    public int getApiRetry() {
+        return apiRetry;
+    }
+
+    public int getApiBackoff() {
+        return apiBackoff;
+    }
+
+    public Duration getCacheDuration() {
+        return this.cacheDuration;
     }
 
     public void setUseShuffle(boolean useShuffle) {
@@ -66,8 +80,12 @@ public class ApiConfig {
         this.cacheDuration = Duration.ofMillis(timeMs);
     }
 
-    public Duration getCacheDuration() {
-        return this.cacheDuration;
+    public void setApiRetry(int apiRetry) {
+        this.apiRetry = apiRetry;
+    }
+
+    public void setApiBackoff(int apiBackoff) {
+        this.apiBackoff = apiBackoff;
     }
 
     /**
