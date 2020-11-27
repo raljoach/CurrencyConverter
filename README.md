@@ -45,8 +45,8 @@ Configuration
 * exchange.baseUrls[?]:                    each element represents an external exchange API base url
 * exchange.rateUrls[?]:                    each element represents the rate url format for the baseUrl at the same index
 
-NOTE: <FROM> and <TO> are tokens that are replaced with the actual from and to fields of ConversionRequests at runtime.
-NOTE: <API KEY> is a token placeholder for your own API Key
+NOTE: &ltFROM&gt and &ltTO&gt are tokens that are replaced with the actual from and to fields of ConversionRequests at runtime.
+NOTE: &ltAPI KEY&gt is a token placeholder for your own API Key
  </pre> 
  
 REST API:
