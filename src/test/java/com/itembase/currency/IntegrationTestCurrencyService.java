@@ -115,7 +115,6 @@ public class IntegrationTestCurrencyService {
     @Test
     void testConvert_From_DoesNotExist() {
         // arrange inputs
-        // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EURX";
         String to = "USD";
         double amount = 40;
@@ -134,7 +133,6 @@ public class IntegrationTestCurrencyService {
     @Test
     void testConvert_To_DoesNotExist() {
         // arrange inputs
-        // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EUR";
         String to = "USDX";
         double amount = 40;

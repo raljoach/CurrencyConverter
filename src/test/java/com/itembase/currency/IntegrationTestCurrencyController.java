@@ -114,7 +114,6 @@ public class IntegrationTestCurrencyController {
     @Test
     void testConvert_From_DoesNotExist() {
         // arrange inputs
-        // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EURX";
         String to = "USD";
         double amount = 40;
@@ -159,7 +158,6 @@ public class IntegrationTestCurrencyController {
     @Test
     void testConvert_To_DoesNotExist() {
         // arrange inputs
-        // TODO: Use Random values for inputs i.e. RandomUtils
         String from = "EUR";
         String to = "USDX";
         double amount = 40;
@@ -191,7 +189,6 @@ public class IntegrationTestCurrencyController {
                 .jsonPath("$.amount").doesNotExist()
                 .jsonPath("$.converted").doesNotExist()
                 .jsonPath("$.errorCode").isEqualTo("RateError");
-                //.jsonPath("$.message").isEqualTo(errorMessage);
 
         theResponse.expectBody(ErrorResponse.class).consumeWith(
                 response->{

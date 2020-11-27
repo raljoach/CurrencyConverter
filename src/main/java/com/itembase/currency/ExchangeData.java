@@ -64,6 +64,10 @@ public class ExchangeData {
         this.error = error;
     }
 
+    /**
+     * Gets the rate corresponding to the destination currency
+     * @param to destination currency
+     */
     public Double findRate(String to) {
 
         if(to==null || to.length()==0) throw new IllegalArgumentException("To cannot be: " + to);

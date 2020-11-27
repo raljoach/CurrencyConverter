@@ -70,6 +70,9 @@ public class ApiConfig {
         return this.cacheDuration;
     }
 
+    /**
+     * Randomly rearranges the set of API endpoints read from application.properties file
+     */
     public void shuffle() {
         if(this.useShuffle) {
             int n = baseUrls.size();

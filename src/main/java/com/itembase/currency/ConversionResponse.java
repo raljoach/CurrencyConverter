@@ -49,6 +49,9 @@ public class ConversionResponse extends HttpResponse {
         data.setConvertedAmount(convertedAmount);
     }
 
+    /**
+     * Validates all fields of the response
+     */
     public void validate() {
         var validator = new ConversionDataValidator();
         Errors errors = new BeanPropertyBindingResult(data, "person");

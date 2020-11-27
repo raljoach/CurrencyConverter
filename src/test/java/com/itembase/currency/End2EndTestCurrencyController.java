@@ -31,75 +31,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Import(CurrencyService.class)
 @EnableConfigurationProperties(value = ApiConfig.class)
 public class End2EndTestCurrencyController {
-
     @Autowired
     WebTestClient webTestClient;
-
-    private static List<String> currencyTypeList = new ArrayList<>();
-
-    @BeforeAll
-    static void setup() {
-        currencyTypeList.add("EUR");
-        currencyTypeList.add("USD");
-        currencyTypeList.add("AED");
-        currencyTypeList.add("ARS");
-        currencyTypeList.add("AUD");
-        currencyTypeList.add("BGN");
-        currencyTypeList.add("BRL");
-        currencyTypeList.add("BSD");
-        currencyTypeList.add("CAD");
-        currencyTypeList.add("CHF");
-        currencyTypeList.add("CLP");
-        currencyTypeList.add("CNY");
-        currencyTypeList.add("COP");
-        currencyTypeList.add("CZK");
-        currencyTypeList.add("DKK");
-        currencyTypeList.add("DOP");
-        currencyTypeList.add("EGP");
-        currencyTypeList.add("FJD");
-        currencyTypeList.add("GBP");
-        currencyTypeList.add("GTQ");
-        currencyTypeList.add("HKD");
-        currencyTypeList.add("HRK");
-        currencyTypeList.add("HUF");
-        currencyTypeList.add("IDR");
-        currencyTypeList.add("ILS");
-        currencyTypeList.add("INR");
-        currencyTypeList.add("ISK");
-        currencyTypeList.add("JPY");
-        currencyTypeList.add("KRW");
-        currencyTypeList.add("KZT");
-        currencyTypeList.add("MVR");
-        currencyTypeList.add("MXN");
-        currencyTypeList.add("MYR");
-        currencyTypeList.add("NOK");
-        currencyTypeList.add("NZD");
-        currencyTypeList.add("PAB");
-        currencyTypeList.add("PEN");
-        currencyTypeList.add("PHP");
-        currencyTypeList.add("PKR");
-        currencyTypeList.add("PLN");
-        currencyTypeList.add("PYG");
-        currencyTypeList.add("RON");
-        currencyTypeList.add("RUB");
-        currencyTypeList.add("SAR");
-        currencyTypeList.add("SEK");
-        currencyTypeList.add("SGD");
-        currencyTypeList.add("THB");
-        currencyTypeList.add("TRY");
-        currencyTypeList.add("TWD");
-        currencyTypeList.add("UAH");
-        currencyTypeList.add("UYU");
-        currencyTypeList.add("ZAR");
-    }
 
     @Test
     void testConvert() {
         // arrange input
-        //String from = "GTQ";
-        String from = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1_000_000_001);
+        String from = TestUtils.getRandomCurrency();
+        String to = TestUtils.getRandomCurrency();
+        double originalAmount = TestUtils.getRandomAmount();
 
         ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
 
@@ -131,8 +71,8 @@ public class End2EndTestCurrencyController {
     void testConvert_From_DoesNotExist() {
         // arrange input
         String from = "EURX";
-        String to = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1_000_000_001);
+        String to = TestUtils.getRandomCurrency();
+        double originalAmount = TestUtils.getRandomAmount();
 
         ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
 
@@ -153,8 +93,8 @@ public class End2EndTestCurrencyController {
     void testConvert_To_DoesNotExist() {
         // arrange input
         String to = "EURX";
-        String from = currencyTypeList.get(ThreadLocalRandom.current().nextInt(currencyTypeList.size()));
-        double originalAmount = ThreadLocalRandom.current().nextDouble(0, 1_000_000_001);
+        String from = TestUtils.getRandomCurrency();
+        double originalAmount = TestUtils.getRandomAmount();
 
         ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
 
@@ -174,8 +114,8 @@ public class End2EndTestCurrencyController {
     @Test
     void testConvert_Amount_BadInput() {
         // arrange input
-        String from = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
-        String to = currencyTypeList.get(TestUtils.random().nextInt(currencyTypeList.size()));
+        String from = TestUtils.getRandomCurrency();
+        String to = TestUtils.getRandomCurrency();
         double originalAmount = -40;
 
         ConversionRequest conversionRequest = TestUtils.createConversionRequest(from, to, originalAmount);
