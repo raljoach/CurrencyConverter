@@ -107,7 +107,7 @@ For future consideration:
 * Versioning - versioning of requests can be implemented via headers
 * Rate limiting on Currency Controller API usage
 * API keys for Currency Controller to track whose using this API
-* Support for external exchange API authentication (if required) - can be implemented using
+* Support for external exchange API authentication (if required) - can be implemented using an [Authentication Provider](https://www.baeldung.com/spring-security-authentication-provider)
 * An option for making parallel calls to external exchange APIs, first one wins is returned
 * An option to return the latest conversion rate of all external Exchange APIs, instead of just returning the first successful exchange API response
 
